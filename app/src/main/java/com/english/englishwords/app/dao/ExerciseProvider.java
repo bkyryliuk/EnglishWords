@@ -1,10 +1,10 @@
 package com.english.englishwords.app.dao;
 
-import android.content.Intent;
-
 import com.english.englishwords.app.pojo.Exercise;
 import com.english.englishwords.app.pojo.WordSense;
+import com.english.englishwords.app.pojo.WordValue;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -18,41 +18,45 @@ public class ExerciseProvider {
       ++counter;
       Exercise exercise = new Exercise();
       exercise.setWord(GenerateRandomWordSenseWithSynonyms(counter));
-      exercise.setRelatedWordSenses(GetRelatedWordSenses(exercise.getWordSense(), 6, counter));
+      exercise.setRelatedWordValues(GetRelatedWordSenses(exercise.getWordSense(), 6, counter));
       exercise.setRandomRightAnswer();
       return exercise;
     }
 
     // TODO to be replaced. Just mock function
-    private WordSense GenerateRandomWordSense(int i) {
-        WordSense wordSense = new WordSense();
+    private WordValue GenerateRandomWordSense(int i) {
         Random r = new Random();
-        wordSense.setDefinition("Word definition number " + Integer.toString(i));
-        wordSense.setWord("Word number " + Integer.toString(i));
-        String[] examples = new String[r.nextInt(4) + 1];
-        for (int j = 0; j < examples.length; ++j) {
-            examples[j] = "Word usage example number " + Integer.toString(j) + " for "
-                    + wordSense.getWord();
+        String definition = "Word definition number " + Integer.toString(i);
+        String word = "Word number " + Integer.toString(i);
+        ArrayList<String> examples = new ArrayList<String>();
+        for (int j = 0; j < 6; ++j) {
+            examples.add("Word usage example number " + Integer.toString(j) + " for "
+                    + word);
         }
-        wordSense.setExamples(examples);
-        return wordSense;
+
+        WordSense wordSense = new WordSense(word, definition, examples, new ArrayList<WordValue>());
+        ArrayList<WordSense> wordSenses = new ArrayList<WordSense>();
+        wordSenses.add(wordSense);
+        WordValue wordValue = new WordValue(word, i, wordSenses);
+
+        return wordValue;
     }
 
     // TODO to be replaced. Just mock function
-    private WordSense GenerateRandomWordSenseWithSynonyms(int i) {
-        WordSense wordSense = GenerateRandomWordSense(i);
+    private WordValue GenerateRandomWordSenseWithSynonyms(int i) {
+        WordValue wordValue = GenerateRandomWordSense(i);
         Random r = new Random();
-        WordSense[] synonyms = new WordSense[r.nextInt(5)];
-        for (int j = 0; j < synonyms.length; ++j) {
-            synonyms[j] = GenerateRandomWordSense(i+j+1);
+        ArrayList<WordValue> synonyms = new ArrayList<WordValue>();
+        for (int j = 0; j < r.nextInt(5); ++j) {
+            synonyms.add(GenerateRandomWordSense(i+j+1));
         }
-        wordSense.setSynonyms(synonyms);
-        return wordSense;
+        wordValue.getSenses().get(0).setSynonyms(synonyms);
+        return wordValue;
     }
 
     // May be reused
-    private boolean WordIsInWordSynonyms(String word, WordSense wordSense) {
-        for (WordSense sense: wordSense.getSynonyms()) {
+    private boolean WordIsInWordSynonyms(String word, WordValue wordValue) {
+        for (WordValue sense: wordValue.getSenses().get(0).getSynonyms()) {
             if (word.equals(sense.getWord())) {
                 return true;
             }
@@ -61,27 +65,27 @@ public class ExerciseProvider {
     }
 
     // TODO to be replaced. Just mock function
-    private WordSense[] GetRelatedWordSenses(WordSense wordSense, int n, int wordNumber) {
-        WordSense[] relatedWordSenses = new WordSense[n];
+    private WordValue[] GetRelatedWordSenses(WordValue wordValue, int n, int wordNumber) {
+        WordValue[] relatedWordValues = new WordValue[n];
         int relatedWordCounter = wordNumber - n;
         if (relatedWordCounter < 0) {
             relatedWordCounter = 0;
         }
         for (int i = 0; i< n; ++i) {
-            WordSense relatedWordSense = GenerateRandomWordSenseWithSynonyms(relatedWordCounter);
-            while (WordIsInWordSynonyms(wordSense.getWord(), relatedWordSense)) {
+            WordValue relatedWordValue = GenerateRandomWordSenseWithSynonyms(relatedWordCounter);
+            while (WordIsInWordSynonyms(wordValue.getWord(), relatedWordValue)) {
                 ++relatedWordCounter;
                 if (relatedWordCounter == wordNumber) {
                     continue;
                 }
-                relatedWordSense = GenerateRandomWordSenseWithSynonyms(relatedWordCounter);
+                relatedWordValue = GenerateRandomWordSenseWithSynonyms(relatedWordCounter);
             }
-            relatedWordSenses[i] = relatedWordSense;
+            relatedWordValues[i] = relatedWordValue;
             ++relatedWordCounter;
             if (relatedWordCounter == wordNumber) {
                 continue;
             }
         }
-        return relatedWordSenses;
+        return relatedWordValues;
     }
 }

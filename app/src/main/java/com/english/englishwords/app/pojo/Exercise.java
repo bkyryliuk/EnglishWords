@@ -6,24 +6,25 @@ import java.util.Random;
  * Created by bogdank on 4/6/14.
  */
 public class Exercise {
-    public WordSense getWordSense() {
+    public WordValue getWordSense() {
         return word;
     }
 
-    public void setWord(WordSense word) {
+    public void setWord(WordValue word) {
         this.word = word;
     }
 
-    public WordSense[] getRelatedWordSenses() {
-        return relatedWordSenses;
+    public WordValue[] getRelatedWordValues() {
+        return relatedWordValues;
     }
 
-    public void setRelatedWordSenses(WordSense[] relatedWordSenses) {
-        this.relatedWordSenses = relatedWordSenses;
+    public void setRelatedWordValues(WordValue[] relatedWordValues) {
+        this.relatedWordValues = relatedWordValues;
         // update their definitions
-        relatedWordSensesDefinitions = new String[relatedWordSenses.length];
-        for (int i = 0; i < relatedWordSenses.length; ++i) {
-            relatedWordSensesDefinitions[i] = relatedWordSenses[i].getDefinition();
+        relatedWordSensesDefinitions = new String[relatedWordValues.length];
+        for (int i = 0; i < relatedWordValues.length; ++i) {
+            relatedWordSensesDefinitions[i] = relatedWordValues[i]
+                    .getSenses().get(0).getDefinition();
         }
     }
 
@@ -37,15 +38,15 @@ public class Exercise {
 
     public void setRandomRightAnswer() {
         Random random = new Random();
-        rightAnswer = random.nextInt(relatedWordSenses.length);
-        relatedWordSenses[rightAnswer] = word;
-        relatedWordSensesDefinitions[rightAnswer] = word.getDefinition();
+        rightAnswer = random.nextInt(relatedWordValues.length);
+        relatedWordValues[rightAnswer] = word;
+        relatedWordSensesDefinitions[rightAnswer] = word.getSenses().get(0).getDefinition();
 
     }
 
-    private WordSense word;
+    private WordValue word;
     private String[] relatedWordSensesDefinitions;
-    private WordSense[] relatedWordSenses;
+    private WordValue[] relatedWordValues;
     private int rightAnswer;
 
 }

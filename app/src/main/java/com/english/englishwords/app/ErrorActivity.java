@@ -3,7 +3,6 @@ package com.english.englishwords.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,11 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.english.englishwords.app.dao.ExerciseProvider;
-import com.english.englishwords.app.pojo.Exercise;
-import com.english.englishwords.app.pojo.WordSense;
+import com.english.englishwords.app.pojo.WordValue;
 
 
 public class ErrorActivity extends Activity {
@@ -25,8 +21,8 @@ public class ErrorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error);
         Intent myIntent = getIntent();
-        WordSense correctAnswer = (WordSense) myIntent.getSerializableExtra("correct answer");
-        WordSense clickedAnswer = (WordSense) myIntent.getSerializableExtra("clicked answer");
+        WordValue correctAnswer = (WordValue) myIntent.getSerializableExtra("correct answer");
+        WordValue clickedAnswer = (WordValue) myIntent.getSerializableExtra("clicked answer");
         Bundle bundle = new Bundle();
         bundle.putSerializable("correct answer", correctAnswer);
         bundle.putSerializable("clicked answer", clickedAnswer);
@@ -78,9 +74,9 @@ public class ErrorActivity extends Activity {
                                  Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_error, container, false);
             ListView errorListView = (ListView)  rootView.findViewById(R.id.error_list_view);
-            WordSense correctAnswer = (WordSense) getArguments().getSerializable("correct answer");
-            WordSense clickedAnswer = (WordSense) getArguments().getSerializable("clicked answer");
-            WordSense[] words = new WordSense[2];
+            WordValue correctAnswer = (WordValue) getArguments().getSerializable("correct answer");
+            WordValue clickedAnswer = (WordValue) getArguments().getSerializable("clicked answer");
+            WordValue[] words = new WordValue[2];
             words[0] = correctAnswer;
             words[1] = clickedAnswer;
 

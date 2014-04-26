@@ -1,28 +1,27 @@
 package com.english.englishwords.app.pojo;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
- * Created by bogdank on 4/6/14.
+ * Created by bogdank on 4/26/14.
  */
 public class WordSense implements Serializable {
     private String word;
+    private String definition;
+    private ArrayList<String> examples;
+    private ArrayList<WordValue> synonyms;
 
-    public String getWord() {
-        return word;
-    }
-
-    public void setWord(String word) {
+    public WordSense(String word, String definition, ArrayList<String> examples,
+                     ArrayList<WordValue> synonyms) {
         this.word = word;
+        this.definition = definition;
+        this.examples = new ArrayList<String>(examples);
+        this.synonyms = new ArrayList<WordValue>(synonyms);
     }
 
     public String getDefinition() {
         return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
     }
 
     public String getConcatenatedExamples() {
@@ -36,43 +35,24 @@ public class WordSense implements Serializable {
 
     public String getConcatenatedSynonyms() {
         String concatenatedExamples = "";
-        for (WordSense synonym : synonyms) {
+        for (WordValue synonym : synonyms) {
             concatenatedExamples+=synonym.getWord();
-            if (!synonym.getWord().equals(synonyms[synonyms.length-1].getWord())) {
+            if (!synonym.getWord().equals(synonyms.get(synonyms.size()-1).getWord())) {
                 concatenatedExamples += ", ";
             }
         }
         return concatenatedExamples;
     }
 
-    public void setExamples(String[] examples) {
-        this.examples = examples;
-    }
-
-    public WordSense[] getSynonyms() {
+    public ArrayList<WordValue> getSynonyms() {
         return synonyms;
     }
 
-    public void setSynonyms(WordSense[] synonyms) {
-        this.synonyms = synonyms;
+    public void setSynonyms(ArrayList<WordValue> synonyms) {
+        this.synonyms = new ArrayList<WordValue>(synonyms);
     }
 
-    public int getRank() {
-        return rank;
+    public String getWord() {
+        return word;
     }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    private String definition;
-    private String[] examples;
-    private WordSense[] synonyms;
-    private int rank;
-
-    // for first 5k we may use translations instead of definitions
-    // the structure may be updated
-    // HashMap<LangCode, Translation>
-    private HashMap<String, String> translations;
-    private HashMap<String, String>[] exampleTranslations;
 }

@@ -170,7 +170,7 @@ public class MainActivity extends Activity
                         // change the fragment to display the error screen
                         Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
                         intent.putExtra("correct answer", exercise.getWordSense());
-                        intent.putExtra("clicked answer", exercise.getRelatedWordSenses()[position]);
+                        intent.putExtra("clicked answer", exercise.getRelatedWordValues()[position]);
                         startActivity(intent);
                     } else {
                         exercise = exerciseProvider.getNextExercise();
