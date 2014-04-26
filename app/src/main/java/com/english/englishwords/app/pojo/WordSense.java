@@ -15,6 +15,7 @@ public class WordSense implements Serializable {
     public WordSense(String word, String definition, ArrayList<String> examples,
                      ArrayList<WordValue> synonyms) {
         this.word = word;
+
         this.definition = definition;
         this.examples = new ArrayList<String>(examples);
         this.synonyms = new ArrayList<WordValue>(synonyms);
