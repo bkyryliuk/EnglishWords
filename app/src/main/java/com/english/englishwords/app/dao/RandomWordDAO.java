@@ -1,9 +1,10 @@
 package com.english.englishwords.app.dao;
 
+import com.english.englishwords.app.pojo.Word;
 import com.english.englishwords.app.pojo.WordSense;
-import com.english.englishwords.app.pojo.WordValue;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -11,19 +12,18 @@ import java.util.Random;
  */
 public class RandomWordDAO implements WordDAO {
   @Override
-  public WordValue getWord(String word) {
-    WordValue wordValue = GenerateRandomWord(word);
+  public Word getWord(String word) {
+    Word wordValue = GenerateRandomWord(word);
     Random r = new Random();
-    ArrayList<WordValue> synonyms = new ArrayList<WordValue>();
+    List<String> synonyms = new ArrayList<String>();
     for (int j = 0; j < r.nextInt(5); ++j) {
-      synonyms.add(GenerateRandomWord(Integer.toString(Integer.parseInt(word) + j + 1)));
+      synonyms.add(Integer.toString(Integer.parseInt(word) + j + 1));
     }
     wordValue.getSenses().get(0).setSynonyms(synonyms);
     return wordValue;
   }
 
-  private WordValue GenerateRandomWord(String i) {
-    Random r = new Random();
+  private Word GenerateRandomWord(String i) {
     String definition = "Word definition number " + i;
     String word = "Word number " + i;
     ArrayList<String> examples = new ArrayList<String>();
@@ -32,11 +32,8 @@ public class RandomWordDAO implements WordDAO {
           + word);
     }
 
-    WordSense wordSense = new WordSense(word, definition, examples, new ArrayList<WordValue>());
     ArrayList<WordSense> wordSenses = new ArrayList<WordSense>();
-    wordSenses.add(wordSense);
-    WordValue wordValue = new WordValue(word, wordSenses);
-
-    return wordValue;
+    wordSenses.add(new WordSense(word, definition, examples, new ArrayList<String>()));
+    return new Word(word, wordSenses);
   }
 }

@@ -1,6 +1,6 @@
 package com.english.englishwords.app.dao;
 
-import com.english.englishwords.app.pojo.WordValue;
+import com.english.englishwords.app.pojo.Word;
 
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
@@ -12,9 +12,9 @@ import net.sf.extjwnl.dictionary.Dictionary;
  */
 public class WordNetWordDAO implements WordDAO {
   @Override
-  public WordValue getWord(String word) {
+  public Word getWord(String word) {
     Dictionary dic;
-    WordValue wordValue = new WordValue(word);
+    Word wordValue = new Word(word);
     try {
       dic = Dictionary.getFileBackedInstance("data");
       IndexWordSet indexWordSet = dic.lookupAllIndexWords(word);

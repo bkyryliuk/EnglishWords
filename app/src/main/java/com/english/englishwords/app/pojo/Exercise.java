@@ -1,16 +1,14 @@
 package com.english.englishwords.app.pojo;
 
-import java.util.List;
-
 /**
  * Created by bogdank on 4/6/14.
  */
 public class Exercise {
-  public WordValue getLearningWord() {
+  public Word getLearningWord() {
     return word;
   }
 
-  public void setLearningWord(WordValue word) {
+  public void setLearningWord(Word word) {
     this.word = word;
   }
 
@@ -22,16 +20,16 @@ public class Exercise {
     this.question = question;
   }
 
-  public WordValue[] getOptionWords() {
+  public Word[] getOptionWords() {
     return optionWords;
   }
 
-  public void setOptionWords(WordValue[] relatedWordValues) {
-    this.optionWords = relatedWordValues;
+  public void setOptionWords(Word[] relatedWords) {
+    this.optionWords = relatedWords;
     // update their definitions
-    options = new String[relatedWordValues.length];
-    for (int i = 0; i < relatedWordValues.length; ++i) {
-      options[i] = relatedWordValues[i]
+    options = new String[relatedWords.length];
+    for (int i = 0; i < relatedWords.length; ++i) {
+      options[i] = relatedWords[i]
           .getSenses().get(0).getDefinition();
     }
   }
@@ -44,18 +42,17 @@ public class Exercise {
     return options;
   }
 
-  public int getRightAnswer() {
-    return rightAnswer;
+  public int getCorrectOption() {
+    return correctOption;
   }
 
-  public void setRightAnswer(int rightAnswer) {
-    this.rightAnswer = rightAnswer;
+  public void setCorrectOption(int correctOption) {
+    this.correctOption = correctOption;
   }
 
-  private WordValue word;
+  private Word word;
   private String question;
-  private WordValue[] optionWords;
+  private Word[] optionWords;
   private String[] options;
-  private int rightAnswer;
-
+  private int correctOption;
 }

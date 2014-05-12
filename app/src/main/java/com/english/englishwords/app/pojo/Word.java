@@ -6,9 +6,9 @@ import java.util.ArrayList;
 /**
  * Created by bogdank on 4/6/14.
  */
-public class WordValue implements Serializable {
+public class Word implements Serializable {
   private String word;
-  private double learningPriority;
+//  private double learningPriority;
   private ArrayList<WordSense> senses;
 
   //TODO(krasikov): Let's uncomment this when we decide to use this data.
@@ -19,12 +19,12 @@ public class WordValue implements Serializable {
 //  private HashMap<String, String>[] exampleTranslations;
 
 
-  public WordValue(String word) {
+  public Word(String word) {
     this.word = word;
     this.senses = new ArrayList<WordSense>();
   }
 
-  public WordValue(String word, ArrayList<WordSense> senses) {
+  public Word(String word, ArrayList<WordSense> senses) {
     this.word = word;
     // TODO(krasikov): do we need copy here?
     this.senses = new ArrayList<WordSense>(senses);
@@ -35,13 +35,13 @@ public class WordValue implements Serializable {
   }
 
 
-  public double getLearningPriority() {
-    return learningPriority;
-  }
-
-  public void setLearningPriority(double learningPriority) {
-    this.learningPriority = learningPriority;
-  }
+//  public double getLearningPriority() {
+//    return learningPriority;
+//  }
+//
+//  public void setLearningPriority(double learningPriority) {
+//    this.learningPriority = learningPriority;
+//  }
 
   public ArrayList<WordSense> getSenses() {
     return senses;
@@ -49,8 +49,8 @@ public class WordValue implements Serializable {
 
   public boolean IsSynonymOf(String word) {
     for (WordSense sense : getSenses()) {
-      for (WordValue synonym : sense.getSynonyms()) {
-        if (word.equals(synonym.getWord())) {
+      for (String synonym : sense.getSynonyms()) {
+        if (word.equals(synonym)) {
           return true;
         }
       }

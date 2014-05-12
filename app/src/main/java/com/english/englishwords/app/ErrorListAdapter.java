@@ -6,22 +6,22 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.english.englishwords.app.pojo.WordValue;
+import com.english.englishwords.app.pojo.Word;
 
 /**
  * Created by bogdank on 4/6/14.
  */
 public class ErrorListAdapter extends BaseAdapter {
-  WordValue[] wordValues;
+  Word[] words;
   private static LayoutInflater inflater = null;
 
-  public ErrorListAdapter(LayoutInflater i, WordValue[] wss) {
-    wordValues = wss;
+  public ErrorListAdapter(LayoutInflater i, Word[] wss) {
+    words = wss;
     inflater = i;
   }
 
   public int getCount() {
-    return wordValues.length;
+    return words.length;
   }
 
   public Object getItem(int position) {
@@ -37,15 +37,15 @@ public class ErrorListAdapter extends BaseAdapter {
     if (convertView == null)
       vi = inflater.inflate(R.layout.error_list_view, null);
 
-    WordValue wordValue = wordValues[position];
+    Word word = words[position];
     TextView wordTextView = (TextView) vi.findViewById(R.id.error_exercise_word);
-    wordTextView.setText(wordValue.getWord());
+    wordTextView.setText(word.getWord());
     TextView definitionTextView = (TextView) vi.findViewById(R.id.error_word_definition_text);
-    definitionTextView.setText(wordValue.getSenses().get(0).getDefinition());
+    definitionTextView.setText(word.getSenses().get(0).getDefinition());
     TextView examplesTextView = (TextView) vi.findViewById(R.id.error_word_examples_text);
-    examplesTextView.setText(wordValue.getSenses().get(0).getConcatenatedExamples());
+    examplesTextView.setText(word.getSenses().get(0).getConcatenatedExamples());
     TextView synonymsTextView = (TextView) vi.findViewById(R.id.error_word_synonyms_text);
-    synonymsTextView.setText(wordValue.getSenses().get(0).getConcatenatedSynonyms());
+    synonymsTextView.setText(word.getSenses().get(0).getConcatenatedSynonyms());
 
     // TODO fill data from the exerice
     return vi;

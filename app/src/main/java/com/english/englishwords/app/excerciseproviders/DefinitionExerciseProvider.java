@@ -1,8 +1,10 @@
 package com.english.englishwords.app.excerciseproviders;
 
+import android.util.Log;
+
 import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.pojo.Exercise;
-import com.english.englishwords.app.pojo.WordValue;
+import com.english.englishwords.app.pojo.Word;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,45 +25,52 @@ public class DefinitionExerciseProvider implements ExerciseProvider {
     Exercise exercise = new Exercise();
     exercise.setLearningWord(wordDao.getWord(wordToLearn));
     exercise.setQuestion(exercise.getLearningWord().getWord());
-    exercise.setOptionWords(GetOptions(exercise.getLearningWord(), 6));
+    exercise.setOptionWords(GenerateOptions(exercise.getLearningWord(), 6));
 
     List<String> options = new ArrayList<String>();
-    for (WordValue option : exercise.getOptionWords()) {
+    for (Word option : exercise.getOptionWords()) {
+      // TODO(krasikov): use other than first sense.
       options.add(option.getSenses().get(0).getDefinition());
     }
     exercise.setOptions(options.toArray(new String[0]));
 
-    setRandomRightAnswer(exercise);
+    // Originally correct answer is at position 0.
+    moveCorrectOptionToRandomPosition(exercise);
+
     return exercise;
   }
 
-  public void setRandomRightAnswer(Exercise exercise) {
+  public void moveCorrectOptionToRandomPosition(Exercise exercise) {
     Random random = new Random();
-    exercise.setRightAnswer(random.nextInt(exercise.getOptionWords().length));
-    exercise.getOptionWords()[exercise.getRightAnswer()] = exercise.getLearningWord();
-    exercise.getOptions()[exercise.getRightAnswer()] =
-        exercise.getLearningWord().getSenses().get(0).getDefinition();
+    exercise.setCorrectOption(random.nextInt(exercise.getOptionWords().length));
 
+    Word tmpWord = exercise.getOptionWords()[exercise.getCorrectOption()];
+    exercise.getOptionWords()[exercise.getCorrectOption()] = exercise.getOptionWords()[0];
+    exercise.getOptionWords()[0] = tmpWord;
+
+    String tmpOption = exercise.getOptions()[exercise.getCorrectOption()];
+    exercise.getOptions()[exercise.getCorrectOption()] = exercise.getOptions()[0];
+    exercise.getOptions()[0] = tmpOption;
   }
 
-  private WordValue[] GetOptions(WordValue wordValue, int optionsNumber) {
-    WordValue[] optionWords = new WordValue[optionsNumber];
-    // TODO(krasikov): make this method to work with real words, not numbers instead of words (use
-    // WordQueue).
-    int optionCandidateWord = 0;
-    optionWords[0] = wordValue;
+  // TODO(krasikov): make this method to work with real words, not numbers instead of words (use
+  // WordQueue).
+  private Word[] GenerateOptions(Word word, int optionsNumber) {
+    Word[] optionWords = new Word[optionsNumber];
+    // Later correct option will be moved to a random position.
+    optionWords[0] = word;
+    int candidateOptionRawWord = -1;
     for (int i = 1; i < optionsNumber; ++i) {
-      WordValue optionCandidateWordValue = wordDao.getWord(Integer.toString(optionCandidateWord));
-      while (Integer.toString(optionCandidateWord).equals(wordValue.getWord()) ||
-             optionCandidateWordValue.IsSynonymOf(wordValue.getWord())) {
-        ++optionCandidateWord;
-        optionCandidateWordValue = wordDao.getWord(Integer.toString(optionCandidateWord));
+      Word candidateOptionWord = wordDao.getWord(Integer.toString(++candidateOptionRawWord));
+//      Log.e(getClass().getSimpleName(), "start with id:" + candidateOptionRawWord + "," +
+//          candidateOptionRawWord + "," + word.getWord() + "," + Integer.toString(candidateOptionRawWord).equals(word.getWord()));
+      while (("Word number " + Integer.toString(candidateOptionRawWord)).equals(word.getWord()) ||
+             candidateOptionWord.IsSynonymOf(word.getWord())) {
+        candidateOptionWord = wordDao.getWord(Integer.toString(++candidateOptionRawWord));
       }
 
-      optionWords[i] = optionCandidateWordValue;
-      ++optionCandidateWord;
+      optionWords[i] = candidateOptionWord;
     }
-
     return optionWords;
   }
 }

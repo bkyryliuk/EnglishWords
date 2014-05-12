@@ -1,10 +1,10 @@
 package com.english.englishwords.app.dao;
 
-import com.english.englishwords.app.pojo.WordValue;
+import com.english.englishwords.app.pojo.Word;
 
 /**
  * Created by rage on 11.05.14.
  */
 public interface WordDAO {
-  WordValue getWord(String word);
+  Word getWord(String word);
 }

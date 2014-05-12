@@ -23,6 +23,7 @@ import com.english.englishwords.app.dao.RandomWordDAO;
 import com.english.englishwords.app.excerciseproviders.DefinitionExerciseProvider;
 import com.english.englishwords.app.excerciseproviders.ExerciseProvider;
 import com.english.englishwords.app.pojo.Exercise;
+import com.english.englishwords.app.pojo.WordQueue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,10 @@ public class MainActivity extends Activity
     mNavigationDrawerFragment.setUp(
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
+
+    // Initialize singleton for word queue from res/original_word_order.txt or from local storage
+    // (if application was in use before).
+    WordQueue.initialize(getApplicationContext());
   }
 
   @Override
@@ -170,7 +175,7 @@ public class MainActivity extends Activity
         public void onItemClick(AdapterView<?> parent, View view,
                                 int position, long id) {
           //TODO(krasikov): move this method to MemorizationDecider.
-          if (position != exercise.getRightAnswer()) {
+          if (position != exercise.getCorrectOption()) {
             // change the fragment to display the error screen
             Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
             intent.putExtra("correct answer", exercise.getLearningWord());

@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.english.englishwords.app.pojo.WordValue;
+import com.english.englishwords.app.pojo.Word;
 
 
 public class ErrorActivity extends Activity {
@@ -21,8 +21,8 @@ public class ErrorActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_error);
     Intent myIntent = getIntent();
-    WordValue correctAnswer = (WordValue) myIntent.getSerializableExtra("correct answer");
-    WordValue clickedAnswer = (WordValue) myIntent.getSerializableExtra("clicked answer");
+    Word correctAnswer = (Word) myIntent.getSerializableExtra("correct answer");
+    Word clickedAnswer = (Word) myIntent.getSerializableExtra("clicked answer");
     Bundle bundle = new Bundle();
     bundle.putSerializable("correct answer", correctAnswer);
     bundle.putSerializable("clicked answer", clickedAnswer);
@@ -74,9 +74,9 @@ public class ErrorActivity extends Activity {
                              Bundle savedInstanceState) {
       final View rootView = inflater.inflate(R.layout.fragment_error, container, false);
       ListView errorListView = (ListView) rootView.findViewById(R.id.error_list_view);
-      WordValue correctAnswer = (WordValue) getArguments().getSerializable("correct answer");
-      WordValue clickedAnswer = (WordValue) getArguments().getSerializable("clicked answer");
-      WordValue[] words = new WordValue[2];
+      Word correctAnswer = (Word) getArguments().getSerializable("correct answer");
+      Word clickedAnswer = (Word) getArguments().getSerializable("clicked answer");
+      Word[] words = new Word[2];
       words[0] = correctAnswer;
       words[1] = clickedAnswer;
 

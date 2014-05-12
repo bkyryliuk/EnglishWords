@@ -2,6 +2,7 @@ package com.english.englishwords.app.pojo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bogdank on 4/26/14.
@@ -9,16 +10,16 @@ import java.util.ArrayList;
 public class WordSense implements Serializable {
   private String word;
   private String definition;
-  private ArrayList<String> examples;
-  private ArrayList<WordValue> synonyms;
+  private List<String> examples;
+  private List<String> synonyms;
 
   public WordSense(String word, String definition, ArrayList<String> examples,
-                   ArrayList<WordValue> synonyms) {
+                   ArrayList<String> synonyms) {
     this.word = word;
 
     this.definition = definition;
     this.examples = new ArrayList<String>(examples);
-    this.synonyms = new ArrayList<WordValue>(synonyms);
+    this.synonyms = new ArrayList<String>(synonyms);
   }
 
   public String getDefinition() {
@@ -36,21 +37,21 @@ public class WordSense implements Serializable {
 
   public String getConcatenatedSynonyms() {
     String concatenatedExamples = "";
-    for (WordValue synonym : synonyms) {
-      concatenatedExamples += synonym.getWord();
-      if (!synonym.getWord().equals(synonyms.get(synonyms.size() - 1).getWord())) {
+    for (String synonym : synonyms) {
+      concatenatedExamples += synonym;
+      if (!synonym.equals(synonyms.get(synonyms.size() - 1))) {
         concatenatedExamples += ", ";
       }
     }
     return concatenatedExamples;
   }
 
-  public ArrayList<WordValue> getSynonyms() {
+  public List<String> getSynonyms() {
     return synonyms;
   }
 
-  public void setSynonyms(ArrayList<WordValue> synonyms) {
-    this.synonyms = new ArrayList<WordValue>(synonyms);
+  public void setSynonyms(List<String> synonyms) {
+    this.synonyms = new ArrayList<String>(synonyms);
   }
 
   public String getWord() {
