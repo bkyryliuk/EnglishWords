@@ -26,7 +26,6 @@ import com.english.englishwords.app.pojo.Exercise;
 import com.english.englishwords.app.pojo.WordQueue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class MainActivity extends Activity
@@ -45,6 +44,11 @@ public class MainActivity extends Activity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    // Initialize singleton for word queue from original_word_order.txt or from local storage
+    // (if application was in use before).
+    WordQueue.initialize(getApplicationContext());
+
     setContentView(R.layout.activity_main);
 
     mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -55,10 +59,6 @@ public class MainActivity extends Activity
     mNavigationDrawerFragment.setUp(
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
-
-    // Initialize singleton for word queue from res/original_word_order.txt or from local storage
-    // (if application was in use before).
-    WordQueue.initialize(getApplicationContext());
   }
 
   @Override
@@ -127,12 +127,11 @@ public class MainActivity extends Activity
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final ExerciseProvider exerciseProvider = new DefinitionExerciseProvider(new RandomWordDAO());
-    private static Exercise exercise = exerciseProvider.getExerciseForWord("0");
+    private static Exercise exercise = null;
     private static int currentExerciseNumber = 0;
     // updates to this arraylist will update the list view on the screen that is
     // responsible for displaying possible choices
-    private static ArrayList<String> answersString = new ArrayList<String>(
-        Arrays.asList(exercise.getOptions()));
+    private static ArrayList<String> options = new ArrayList<String>();
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -147,15 +146,43 @@ public class MainActivity extends Activity
     }
 
     public LearningFragment() {
+      createNextExercise();
+    }
+
+    void OnUserClickedAnOption(View rootView, int position) {
+      if (position != exercise.getCorrectOption()) {
+        //TODO(krasikov): update WordStat.
+        // change the fragment to display the error screen
+        Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
+        intent.putExtra("correct answer", exercise.getLearningWord());
+        intent.putExtra("clicked answer", exercise.getOptionWords()[position]);
+        startActivity(intent);
+      } else {
+        //TODO(krasikov): update WordStat.
+        currentExerciseNumber++;
+        createNextExercise();
+        updateView(rootView);
+      }
+    }
+
+    //TODO(krasikov): move this method to MemorizationDecider.
+    private void createNextExercise() {
+      // TODO(krasikov): Pick the word from WordQueue with highest learning priority.
+      if (WordQueue.getInstance().getWordsInProgress() == null) {
+        System.out.println("words in progress are null");
+      }
+      String word = WordQueue.getInstance().getWordsInProgress().get(currentExerciseNumber);
+      System.out.println("learn: " + word);
+      exercise = exerciseProvider.generateExerciseForWord(word);
     }
 
     public void updateView(View view) {
       TextView word = (TextView) view.findViewById(R.id.error_exercise_word);
       word.setText(exercise.getQuestion());
       ListView answersListView = (ListView) view.findViewById(R.id.exercise_answers);
-      answersString.clear();
+      options.clear();
       for (String newAnswer : exercise.getOptions()) {
-        answersString.add(newAnswer);
+        options.add(newAnswer);
       }
       ((ArrayAdapter) answersListView.getAdapter()).notifyDataSetChanged();
     }
@@ -166,7 +193,7 @@ public class MainActivity extends Activity
       final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
       ListView answersListView = (ListView) rootView.findViewById(R.id.exercise_answers);
       ArrayAdapter adapter = new ArrayAdapter<String>(rootView.getContext(),
-          android.R.layout.simple_list_item_1, answersString);
+          android.R.layout.simple_list_item_1, options);
       answersListView.setAdapter(adapter);
       // call only after adapter creation
       updateView(rootView);
@@ -174,19 +201,7 @@ public class MainActivity extends Activity
       answersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View view,
                                 int position, long id) {
-          //TODO(krasikov): move this method to MemorizationDecider.
-          if (position != exercise.getCorrectOption()) {
-            // change the fragment to display the error screen
-            Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
-            intent.putExtra("correct answer", exercise.getLearningWord());
-            intent.putExtra("clicked answer", exercise.getOptionWords()[position]);
-            startActivity(intent);
-          } else {
-            currentExerciseNumber++;
-            // TODO(krasikov): substitute currentExerciseNumber with word from WordQueue.
-            exercise = exerciseProvider.getExerciseForWord(Integer.toString(currentExerciseNumber));
-            updateView(rootView);
-          }
+          OnUserClickedAnOption(rootView, position);
           // When clicked, show a toast with the TextView text
           Toast.makeText(rootView.getContext(),
               ((TextView) view).getText(), Toast.LENGTH_SHORT).show();
@@ -198,8 +213,7 @@ public class MainActivity extends Activity
     @Override
     public void onAttach(Activity activity) {
       super.onAttach(activity);
-      ((MainActivity) activity).onSectionAttached(
-          getArguments().getInt(ARG_SECTION_NUMBER));
+      ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
     }
   }
 }

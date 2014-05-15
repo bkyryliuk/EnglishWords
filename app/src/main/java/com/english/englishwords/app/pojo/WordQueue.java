@@ -1,11 +1,12 @@
 package com.english.englishwords.app.pojo;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,9 @@ public class WordQueue {
     WordQueue.instance = new WordQueue();
     try {
       WordQueue.instance.wordsInProgress =
-          readWordListFromFile(context.openFileInput("wordsInProgress.txt"));
-      WordQueue.instance.unknownWords =
-          readWordListFromFile(context.openFileInput("unknownWords.txt"));
+          readWordListFromInput(context.openFileInput("wordsInProgress.txt"));
       WordQueue.instance.learnedWords =
-          readWordListFromFile(context.openFileInput("learnedWords.txt"));
+          readWordListFromInput(context.openFileInput("learnedWords.txt"));
     } catch (FileNotFoundException e) {
       initializeFirstApplicationRun(context);
     } catch (IOException e) {
@@ -34,24 +33,23 @@ public class WordQueue {
     }
   }
 
-  private static ArrayList<String> readWordListFromFile(FileInputStream wordlistFile) throws IOException {
+  private static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
     ArrayList<String> wordlist = new ArrayList<String>();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(wordlistFile));
+    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
     String word;
 
     while ((word = reader.readLine()) != null) {
       wordlist.add(word.trim());
     }
 
-    wordlistFile.close();
+    input.close();
     return wordlist;
   }
 
   private static void initializeFirstApplicationRun(Context context) {
     try {
-      WordQueue.instance.unknownWords =
-          readWordListFromFile(context.openFileInput("original_word_order.txt"));
-      WordQueue.instance.wordsInProgress = new ArrayList<String>();
+      WordQueue.instance.wordsInProgress =
+          readWordListFromInput(context.getAssets().open("original_word_order.txt"));
       WordQueue.instance.learnedWords = new ArrayList<String>();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -66,20 +64,13 @@ public class WordQueue {
     return instance;
   }
 
-  // TODO(krasikov): consider joining this list with unknownWords.
-  // Words that were shown to a student at least once.
+  // Words that weren't yet learned or weren't even show to the user.
   private List<String> wordsInProgress;
-  // Words weren't shown to a student.
-  private List<String> unknownWords;
-  // Words that were learned by a student.
+  // Words that considered to be learned.
   private List<String> learnedWords;
 
   public List<String> getWordsInProgress() {
     return wordsInProgress;
-  }
-
-  public List<String> getUnknownWords() {
-    return unknownWords;
   }
 
   public List<String> getLearnedWords() {
@@ -87,26 +78,5 @@ public class WordQueue {
   }
 
   private WordQueue() {
-  }
-
-  public void learnWord() {
-    // TODO add logic of moving the word from the wordsInProgress to the learnedWords
-    // and adding new word from unknownWords to the wordsInProgress
-  }
-
-  /**
-   * @return the Word with the highest priority value
-   */
-  public Word getWordToLearn() {
-    // TODO
-    return null;
-  }
-
-  public void updateWordPriority(Word word, double priority) {
-    // TODO
-  }
-
-  public void recalculateWordPriorities() {
-
   }
 }

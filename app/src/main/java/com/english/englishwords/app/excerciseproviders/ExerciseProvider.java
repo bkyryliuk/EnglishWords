@@ -7,5 +7,5 @@ import com.english.englishwords.app.pojo.Exercise;
  */
 //TODO(krasikov): add RootExerciseProvider and SynonymExerciseProvider
 public interface ExerciseProvider {
-  Exercise getExerciseForWord(String wordToLearn);
+  Exercise generateExerciseForWord(String wordToLearn);
 }

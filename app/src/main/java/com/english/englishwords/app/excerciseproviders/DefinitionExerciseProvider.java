@@ -5,6 +5,7 @@ import android.util.Log;
 import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.pojo.Exercise;
 import com.english.englishwords.app.pojo.Word;
+import com.english.englishwords.app.pojo.WordQueue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +14,20 @@ import java.util.Random;
 /**
  * Created by bogdank on 4/6/14.
  */
-// TODO(krasikov): make this class work with real words, not numbers instead of words (use WordQueue)
 public class DefinitionExerciseProvider implements ExerciseProvider {
+  public static final int DEFINITION_EXERCISE_OPTIONS_NUM = 6;
+
   private WordDAO wordDao;
 
   public DefinitionExerciseProvider(WordDAO wordDao) {
     this.wordDao = wordDao;
   }
 
-  public Exercise getExerciseForWord(String wordToLearn) {
+  public Exercise generateExerciseForWord(String wordToLearn) {
     Exercise exercise = new Exercise();
     exercise.setLearningWord(wordDao.getWord(wordToLearn));
     exercise.setQuestion(exercise.getLearningWord().getWord());
-    exercise.setOptionWords(GenerateOptions(exercise.getLearningWord(), 6));
+    exercise.setOptionWords(GenerateOptions(exercise.getLearningWord()));
 
     List<String> options = new ArrayList<String>();
     for (Word option : exercise.getOptionWords()) {
@@ -53,24 +55,28 @@ public class DefinitionExerciseProvider implements ExerciseProvider {
     exercise.getOptions()[0] = tmpOption;
   }
 
-  // TODO(krasikov): make this method to work with real words, not numbers instead of words (use
-  // WordQueue).
-  private Word[] GenerateOptions(Word word, int optionsNumber) {
-    Word[] optionWords = new Word[optionsNumber];
+  private Word[] GenerateOptions(Word word) {
+    Word[] optionWords = new Word[DEFINITION_EXERCISE_OPTIONS_NUM];
     // Later correct option will be moved to a random position.
     optionWords[0] = word;
-    int candidateOptionRawWord = -1;
-    for (int i = 1; i < optionsNumber; ++i) {
-      Word candidateOptionWord = wordDao.getWord(Integer.toString(++candidateOptionRawWord));
+    for (int i = 1; i < DEFINITION_EXERCISE_OPTIONS_NUM; ++i) {
+      String candidateOptionRawWord = GetOptionCandidateWord();
+      Word candidateOptionWord = wordDao.getWord(candidateOptionRawWord);
 //      Log.e(getClass().getSimpleName(), "start with id:" + candidateOptionRawWord + "," +
 //          candidateOptionRawWord + "," + word.getWord() + "," + Integer.toString(candidateOptionRawWord).equals(word.getWord()));
-      while (("Word number " + Integer.toString(candidateOptionRawWord)).equals(word.getWord()) ||
+      while (candidateOptionRawWord.equals(word.getWord()) ||
              candidateOptionWord.IsSynonymOf(word.getWord())) {
-        candidateOptionWord = wordDao.getWord(Integer.toString(++candidateOptionRawWord));
+        candidateOptionRawWord = GetOptionCandidateWord();
+        candidateOptionWord = wordDao.getWord(candidateOptionRawWord);
       }
 
       optionWords[i] = candidateOptionWord;
     }
     return optionWords;
+  }
+
+  private String GetOptionCandidateWord() {
+    // TODO(krasikov): user something smarter.
+    return WordQueue.getInstance().getWordsInProgress().get(new Random().nextInt(10000));
   }
 }
