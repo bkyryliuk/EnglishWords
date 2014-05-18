@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.english.englishwords.app.dao.RandomWordDAO;
+import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.excerciseproviders.DefinitionExerciseProvider;
 import com.english.englishwords.app.excerciseproviders.ExerciseProvider;
 import com.english.englishwords.app.pojo.Exercise;
@@ -66,7 +68,7 @@ public class MainActivity extends Activity
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getFragmentManager();
     fragmentManager.beginTransaction()
-        .replace(R.id.container, LearningFragment.newInstance(position + 1))
+        .replace(R.id.container, LearningFragment.newInstance(this.getApplicationContext(), position + 1))
         .commit();
   }
 
@@ -126,26 +128,30 @@ public class MainActivity extends Activity
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final ExerciseProvider exerciseProvider = new DefinitionExerciseProvider(new RandomWordDAO());
-    private static Exercise exercise = null;
-    private static int currentExerciseNumber = 0;
+    private static int exerciseNumInCurrentSession = 0;
+
+    private ExerciseProvider exerciseProvider;
+    private Exercise exercise = null;
     // updates to this arraylist will update the list view on the screen that is
     // responsible for displaying possible choices
-    private static ArrayList<String> options = new ArrayList<String>();
+    private ArrayList<String> options = new ArrayList<String>();
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static LearningFragment newInstance(int sectionNumber) {
-      LearningFragment fragment = new LearningFragment();
+    public static LearningFragment newInstance(Context context, int sectionNumber) {
+      LearningFragment fragment = new LearningFragment(context);
       Bundle args = new Bundle();
       args.putInt(ARG_SECTION_NUMBER, sectionNumber);
       fragment.setArguments(args);
       return fragment;
     }
 
-    public LearningFragment() {
+    public LearningFragment(Context context) {
+      this.exerciseProvider = new DefinitionExerciseProvider(
+          new WordNetWordDAO(context));
+          //new RandomWordDAO());
       createNextExercise();
     }
 
@@ -159,7 +165,7 @@ public class MainActivity extends Activity
         startActivity(intent);
       } else {
         //TODO(krasikov): update WordStat.
-        currentExerciseNumber++;
+        exerciseNumInCurrentSession++;
         createNextExercise();
         updateView(rootView);
       }
@@ -171,7 +177,7 @@ public class MainActivity extends Activity
       if (WordQueue.getInstance().getWordsInProgress() == null) {
         System.out.println("words in progress are null");
       }
-      String word = WordQueue.getInstance().getWordsInProgress().get(currentExerciseNumber);
+      String word = WordQueue.getInstance().getWordsInProgress().get(exerciseNumInCurrentSession);
       System.out.println("learn: " + word);
       exercise = exerciseProvider.generateExerciseForWord(word);
     }

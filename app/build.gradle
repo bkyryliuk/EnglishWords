@@ -22,4 +22,6 @@ dependencies {
     compile 'com.android.support:support-v4:19.+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('lib/extjwnl-1.6.10.jar')
+    compile files('lib/concurrentlinkedhashmap-lru-1.3.2.jar')
+    compile files('lib/extjwnl-utilities-1.6.10.jar')
 }

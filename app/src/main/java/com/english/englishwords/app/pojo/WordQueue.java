@@ -1,7 +1,8 @@
 package com.english.englishwords.app.pojo;
 
 import android.content.Context;
-import android.content.res.AssetManager;
+
+import com.english.englishwords.app.InitializationHelper;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -46,19 +47,6 @@ public class WordQueue {
     return wordlist;
   }
 
-  private static void initializeFirstApplicationRun(Context context) {
-    try {
-      WordQueue.instance.wordsInProgress =
-          readWordListFromInput(context.getAssets().open("original_word_order.txt"));
-      WordQueue.instance.learnedWords = new ArrayList<String>();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    //TODO(bogdank): call vocabulary size estimation activity.
-  }
 
   public static WordQueue getInstance() {
     return instance;
@@ -68,6 +56,22 @@ public class WordQueue {
   private List<String> wordsInProgress;
   // Words that considered to be learned.
   private List<String> learnedWords;
+
+  public static void initializeFirstApplicationRun(Context context) {
+    String data_storage_root = context.getFilesDir().toString();
+    InitializationHelper.copyAsset(context, data_storage_root, "wordnet");
+    try {
+      instance.wordsInProgress =
+          readWordListFromInput(context.getAssets().open("original_word_order.txt"));
+      instance.learnedWords = new ArrayList<String>();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    //TODO(bogdank): call vocabulary size estimation activity.
+  }
 
   public List<String> getWordsInProgress() {
     return wordsInProgress;
