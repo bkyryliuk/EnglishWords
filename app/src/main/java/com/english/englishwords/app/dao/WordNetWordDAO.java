@@ -17,12 +17,12 @@ import java.util.ArrayList;
  * Created by rage on 11.05.14.
  */
 public class WordNetWordDAO extends WordDAO {
-    private Dictionary dictionary;
+  private Dictionary dictionary;
 
   public WordNetWordDAO(Context context) {
-      super(context);
-      dictionary = null;
-      try {
+    super(context);
+    dictionary = null;
+    try {
       dictionary = Dictionary.getFileBackedInstance(context.getFilesDir().toString() + "/wordnet");
     } catch (JWNLException e) {
       e.printStackTrace();
@@ -43,7 +43,7 @@ public class WordNetWordDAO extends WordDAO {
         String definition = wordString + " definition.";
         if (indexWord.getSenses().size() > 0) {
           // TODO make this line working
-          // definition = indexWord.getSenses().get(0).getGloss();
+          definition = indexWord.getSenses().get(0).getGloss();
         } else {
           Log.v(this.getClass().toString(), "no senses in the word" + wordString);
         }
