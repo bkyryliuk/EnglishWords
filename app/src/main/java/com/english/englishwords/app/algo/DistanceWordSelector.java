@@ -17,37 +17,37 @@ import java.util.PriorityQueue;
 
 
 public class DistanceWordSelector extends WordSelector {
-    public DistanceWordSelector(DistanceCalculatorInterface distanceCalculator) {
-        super(distanceCalculator);
+  public DistanceWordSelector(DistanceCalculatorInterface distanceCalculator) {
+    super(distanceCalculator);
+  }
+
+  @Override
+  public List<Word> SelectNClosestWords(Word word, List<Word> allWords, int number_to_select) {
+    // TODO(Bogdan) replace 10000 with the constant defining the size of the dictionary
+    PriorityQueue<Pair<Word, Integer>> priorityQueue =
+        new PriorityQueue<Pair<Word, Integer>>(
+            10000, new Comparator<Pair<Word, Integer>>() {
+          @Override
+          public int compare(Pair<Word, Integer> lhs, Pair<Word, Integer> rhs) {
+            return lhs.second - rhs.second;
+          }
+        }
+        );
+    for (Word w : allWords) {
+      Pair<Word, Integer> wordWithDistance =
+          new Pair<Word, Integer>(w, distanceCalculator.GetDistance(w.getWord(), word.getWord()));
+      priorityQueue.add(wordWithDistance);
     }
 
-    @Override
-    public List<Word> SelectNClosestWords(Word word, List<Word> allWords, int number_to_select) {
-        // TODO(Bogdan) replace 10000 with the constant defining the size of the dictionary
-        PriorityQueue<Pair<Word, Integer>> priorityQueue =
-                new PriorityQueue<Pair<Word, Integer>>(
-                        10000, new Comparator<Pair<Word, Integer>>() {
-                    @Override
-                    public int compare(Pair<Word, Integer> lhs, Pair<Word, Integer> rhs) {
-                        return lhs.second - rhs.second;
-                    }
-                }
-                );
-        for (Word w : allWords) {
-            Pair<Word, Integer> wordWithDistance =
-                    new Pair<Word, Integer>(w, distanceCalculator.GetDistance(w.getWord(), word.getWord()));
-            priorityQueue.add(wordWithDistance);
-        }
-
-        List<Word> selectedWords = new ArrayList<Word>();
-        for (int i = 0; i < number_to_select; i++) {
-            Pair<Word, Integer> pair = priorityQueue.poll();
-            // eliminate the words with the same spelling
-            while (pair.second == 0) {
-                pair = priorityQueue.poll();
-            }
-            selectedWords.add(pair.first);
-        }
-        return selectedWords;
+    List<Word> selectedWords = new ArrayList<Word>();
+    for (int i = 0; i < number_to_select; i++) {
+      Pair<Word, Integer> pair = priorityQueue.poll();
+      // eliminate the words with the same spelling
+      while (pair.second == 0) {
+        pair = priorityQueue.poll();
+      }
+      selectedWords.add(pair.first);
     }
+    return selectedWords;
+  }
 }
