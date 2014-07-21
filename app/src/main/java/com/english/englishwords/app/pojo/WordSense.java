@@ -8,9 +8,9 @@ import java.util.List;
  * Created by bogdank on 4/26/14.
  */
 public class WordSense implements Serializable {
-    private final String word;
-    private final String definition;
-    private final List<String> examples;
+  private final String word;
+  private final String definition;
+  private final List<String> examples;
   private List<String> synonyms;
 
   public WordSense(String word, String definition, ArrayList<String> examples,

@@ -7,16 +7,16 @@ import java.util.ArrayList;
  * Created by bogdank on 4/6/14.
  */
 public class Word implements Serializable {
-    private final String word;
-    //  private double learningPriority;
-    private final ArrayList<WordSense> senses;
+  private final String word;
+  //  private double learningPriority;
+  private final ArrayList<WordSense> senses;
 
   //TODO(krasikov): Let's uncomment this when we decide to use this data.
   // for first 5k we may use translations instead of definitions
   // the structure may be updated
   // HashMap<LangCode, Translation>
-    //  private HashMap<String, String> translations;
-    //  private HashMap<String, String>[] exampleTranslations;
+  //  private HashMap<String, String> translations;
+  //  private HashMap<String, String>[] exampleTranslations;
 
 
   public Word(String word) {

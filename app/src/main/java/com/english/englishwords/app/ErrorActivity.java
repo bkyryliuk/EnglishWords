@@ -56,17 +56,17 @@ public class ErrorActivity extends Activity {
    * A placeholder fragment containing a simple view.
    */
   public static class ErrorFragment extends Fragment {
-      public ErrorFragment() {
+    public ErrorFragment() {
     }
 
-      /**
-       * Returns a new instance of this fragment for the given section
-       * number.
-       */
-      public static ErrorFragment newInstance(Bundle args) {
-          ErrorFragment fragment = new ErrorFragment();
-          fragment.setArguments(args);
-          return fragment;
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static ErrorFragment newInstance(Bundle args) {
+      ErrorFragment fragment = new ErrorFragment();
+      fragment.setArguments(args);
+      return fragment;
     }
 
     @Override
