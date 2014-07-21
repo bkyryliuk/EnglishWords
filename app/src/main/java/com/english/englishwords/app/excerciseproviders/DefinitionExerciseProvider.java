@@ -73,6 +73,6 @@ public class DefinitionExerciseProvider implements ExerciseProvider {
 
     private String GetOptionCandidateWord() {
         // TODO(krasikov): user something smarter.
-        return WordQueue.getInstance().getWordsInProgress().get(new Random().nextInt(10000));
+        return WordQueue.getInstance().getWordsInProgress().get(new Random().nextInt(100));
     }
 }

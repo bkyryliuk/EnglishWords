@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ import com.english.englishwords.app.pojo.Exercise;
 import com.english.englishwords.app.pojo.WordQueue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity
@@ -176,7 +178,13 @@ public class MainActivity extends Activity
             if (WordQueue.getInstance().getWordsInProgress() == null) {
                 System.out.println("words in progress are null");
             }
-            String word = WordQueue.getInstance().getWordsInProgress().get(exerciseNumInCurrentSession);
+            List<String> words = WordQueue.getInstance().getWordsInProgress();
+            String word = "";
+            if (words.size() > exerciseNumInCurrentSession) {
+                word = words.get(exerciseNumInCurrentSession);
+            } else {
+                Log.e(this.getClass().getSimpleName(), "Cannot get the words to learn");
+            }
             System.out.println("learn: " + word);
             exercise = exerciseProvider.generateExerciseForWord(word);
         }
