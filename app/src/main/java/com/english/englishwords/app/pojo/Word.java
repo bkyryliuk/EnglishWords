@@ -15,8 +15,8 @@ public class Word implements Serializable {
   // for first 5k we may use translations instead of definitions
   // the structure may be updated
   // HashMap<LangCode, Translation>
-//  private HashMap<String, String> translations;
-//  private HashMap<String, String>[] exampleTranslations;
+    //  private HashMap<String, String> translations;
+    //  private HashMap<String, String>[] exampleTranslations;
 
 
   public Word(String word) {

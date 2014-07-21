@@ -19,7 +19,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.english.englishwords.app.dao.RandomWordDAO;
 import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.excerciseproviders.DefinitionExerciseProvider;
 import com.english.englishwords.app.excerciseproviders.ExerciseProvider;
@@ -135,23 +134,23 @@ public class MainActivity extends Activity
     // responsible for displaying possible choices
     private ArrayList<String> options = new ArrayList<String>();
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static LearningFragment newInstance(Context context, int sectionNumber) {
-      LearningFragment fragment = new LearningFragment(context);
-      Bundle args = new Bundle();
-      args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-      fragment.setArguments(args);
-      return fragment;
+      public LearningFragment(Context context) {
+          this.exerciseProvider = new DefinitionExerciseProvider(
+                  new WordNetWordDAO(context));
+          //new RandomWordDAO());
+          createNextExercise();
     }
 
-    public LearningFragment(Context context) {
-      this.exerciseProvider = new DefinitionExerciseProvider(
-          new WordNetWordDAO(context));
-          //new RandomWordDAO());
-      createNextExercise();
+      /**
+       * Returns a new instance of this fragment for the given section
+       * number.
+       */
+      public static LearningFragment newInstance(Context context, int sectionNumber) {
+          LearningFragment fragment = new LearningFragment(context);
+          Bundle args = new Bundle();
+          args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+          fragment.setArguments(args);
+          return fragment;
     }
 
     void OnUserClickedAnOption(View rootView, int position) {
