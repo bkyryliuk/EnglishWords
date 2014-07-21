@@ -15,7 +15,7 @@ import java.util.List;
  * Created by rage on 11.05.14.
  */
 public abstract class WordDAO {
-    private Context context;
+    private final Context context;
 
     public WordDAO(Context context) {
         this.context = context;
@@ -52,6 +52,16 @@ public abstract class WordDAO {
                 return new ArrayList<String>();
             }
         }
+    }
+
+    public List<Word> getAllWords() {
+        ArrayList<Word> allWords = new ArrayList<Word>();
+        for (String w : this.getWordsInProgress().subList(0, 100)) {
+            // TODO(Bogdan) get actual word from the DAO when we will speed things up
+            // TODO(Bogdan) precalculate all words during initialization
+            allWords.add(new Word(w));
+        }
+        return allWords;
     }
 
     public List<String> getLearnedWords() {
