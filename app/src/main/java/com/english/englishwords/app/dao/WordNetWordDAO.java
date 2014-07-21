@@ -16,11 +16,13 @@ import java.util.ArrayList;
 /**
  * Created by rage on 11.05.14.
  */
-public class WordNetWordDAO implements WordDAO {
-  private Dictionary dictionary = null;
+public class WordNetWordDAO extends WordDAO {
+    private Dictionary dictionary;
 
   public WordNetWordDAO(Context context) {
-    try {
+      super(context);
+      dictionary = null;
+      try {
       dictionary = Dictionary.getFileBackedInstance(context.getFilesDir().toString() + "/wordnet");
     } catch (JWNLException e) {
       e.printStackTrace();
