@@ -15,52 +15,62 @@ import java.util.List;
  * Created by rage on 11.05.14.
  */
 public abstract class WordDAO {
-  private Context context;
+    private final Context context;
 
-  public WordDAO(Context context) {
-    this.context = context;
-  }
-
-  private static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
-    ArrayList<String> wordlist = new ArrayList<String>();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-    String word;
-    while ((word = reader.readLine()) != null) {
-      wordlist.add(word.trim());
+    public WordDAO(Context context) {
+        this.context = context;
     }
-    input.close();
-    return wordlist;
-  }
 
-  public abstract Word getWord(String word);
-
-  public List<String> getWordsInProgress() {
-    try {
-      List<String> wordsInProgress =
-          readWordListFromInput(context.openFileInput("wordsInProgress.txt"));
-      if (wordsInProgress.size() == 0) {
-        wordsInProgress = readWordListFromInput(context.getAssets().open("original_word_order.txt"));
-      }
-      return wordsInProgress;
-    } catch (IOException e) {
-      e.printStackTrace();
-      // in case there is no file yet, we return original word list
-      try {
-        return readWordListFromInput(context.getAssets().open("original_word_order.txt"));
-      } catch (IOException e1) {
-        e1.printStackTrace();
-        return new ArrayList<String>();
-      }
+    private static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
+        ArrayList<String> wordlist = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        String word;
+        while ((word = reader.readLine()) != null) {
+            wordlist.add(word.trim());
+        }
+        input.close();
+        return wordlist;
     }
-  }
 
-  public List<String> getLearnedWords() {
-    try {
-      return readWordListFromInput(context.openFileInput("learnedWords.txt"));
-    } catch (IOException e) {
-      e.printStackTrace();
-      return new ArrayList<String>();
+    public abstract Word getWord(String word);
+
+    public List<String> getWordsInProgress() {
+        try {
+            List<String> wordsInProgress =
+                    readWordListFromInput(context.openFileInput("wordsInProgress.txt"));
+            if (wordsInProgress.size() == 0) {
+                wordsInProgress = readWordListFromInput(context.getAssets().open("original_word_order.txt"));
+            }
+            return wordsInProgress;
+        } catch (IOException e) {
+            e.printStackTrace();
+            // in case there is no file yet, we return original word list
+            try {
+                return readWordListFromInput(context.getAssets().open("original_word_order.txt"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                return new ArrayList<String>();
+            }
+        }
     }
-  }
+
+    public List<Word> getAllWords() {
+        ArrayList<Word> allWords = new ArrayList<Word>();
+        for (String w : this.getWordsInProgress().subList(0, 100)) {
+            // TODO(Bogdan) get actual word from the DAO when we will speed things up
+            // TODO(Bogdan) precalculate all words during initialization
+            allWords.add(new Word(w));
+        }
+        return allWords;
+    }
+
+    public List<String> getLearnedWords() {
+        try {
+            return readWordListFromInput(context.openFileInput("learnedWords.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<String>();
+        }
+    }
 
 }
