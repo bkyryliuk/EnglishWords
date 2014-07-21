@@ -18,10 +18,8 @@ import java.util.ArrayList;
  */
 public class WordNetWordDAO implements WordDAO {
   private Dictionary dictionary = null;
-  private Context context;
 
   public WordNetWordDAO(Context context) {
-    this.context = context;
     try {
       dictionary = Dictionary.getFileBackedInstance(context.getFilesDir().toString() + "/wordnet");
     } catch (JWNLException e) {
@@ -40,7 +38,7 @@ public class WordNetWordDAO implements WordDAO {
           synonyms.add("synonym " + wordString);
         ArrayList<String> examples = new ArrayList<String>();
           examples.add("example " + wordString);
-          String definition = wordString;
+          String definition = wordString + " definition.";
           if (indexWord.getSenses().size() > 0) {
               // TODO make this line working
               // definition = indexWord.getSenses().get(0).getGloss();

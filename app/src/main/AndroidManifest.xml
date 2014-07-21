@@ -18,8 +18,7 @@
         </activity>
         <activity
             android:name="com.english.englishwords.app.ErrorActivity"
-            android:label="@string/title_activity_error"
-            android:parentActivityName="com.english.englishwords.app.MainActivity">
+            android:label="@string/title_activity_error">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />

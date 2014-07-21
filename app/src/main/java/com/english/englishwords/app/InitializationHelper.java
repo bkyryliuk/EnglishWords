@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
-import com.english.englishwords.app.pojo.WordQueue;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +55,7 @@ public class InitializationHelper {
    *
    * @param path Path to asset, relative to app's assets directory.
    */
-  public static void copyFileAsset(Context context, String out_dir, String path) {
+  private static void copyFileAsset(Context context, String out_dir, String path) {
     File file = new File(out_dir, path);
     try {
       InputStream in = context.getAssets().open(path);

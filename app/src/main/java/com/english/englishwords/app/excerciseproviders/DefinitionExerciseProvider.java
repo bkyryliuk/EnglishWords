@@ -13,9 +13,9 @@ import java.util.Random;
  * Created by bogdank on 4/6/14.
  */
 public class DefinitionExerciseProvider implements ExerciseProvider {
-    public static final int DEFINITION_EXERCISE_OPTIONS_NUM = 6;
+    private static final int DEFINITION_EXERCISE_OPTIONS_NUM = 6;
 
-    private WordDAO wordDao;
+    private final WordDAO wordDao;
 
     public DefinitionExerciseProvider(WordDAO wordDao) {
         this.wordDao = wordDao;
@@ -40,7 +40,7 @@ public class DefinitionExerciseProvider implements ExerciseProvider {
         return exercise;
     }
 
-    public void moveCorrectOptionToRandomPosition(Exercise exercise) {
+    void moveCorrectOptionToRandomPosition(Exercise exercise) {
         Random random = new Random();
         exercise.setCorrectOption(random.nextInt(exercise.getOptionWords().length));
 

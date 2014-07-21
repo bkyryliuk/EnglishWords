@@ -7,9 +7,9 @@ import java.util.ArrayList;
  * Created by bogdank on 4/6/14.
  */
 public class Word implements Serializable {
-  private String word;
-//  private double learningPriority;
-  private ArrayList<WordSense> senses;
+    private final String word;
+    //  private double learningPriority;
+    private final ArrayList<WordSense> senses;
 
   //TODO(krasikov): Let's uncomment this when we decide to use this data.
   // for first 5k we may use translations instead of definitions
