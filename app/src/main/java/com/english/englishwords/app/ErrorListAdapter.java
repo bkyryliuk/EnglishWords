@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.english.englishwords.app.pojo.Word;
+import com.english.englishwords.app.data_model.Word;
 
 /**
  * Created by bogdank on 4/6/14.

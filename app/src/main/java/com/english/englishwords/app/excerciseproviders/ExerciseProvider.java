@@ -1,6 +1,6 @@
 package com.english.englishwords.app.excerciseproviders;
 
-import com.english.englishwords.app.pojo.Exercise;
+import com.english.englishwords.app.data_model.Exercise;
 
 /**
  * Created by rage on 11.05.14.

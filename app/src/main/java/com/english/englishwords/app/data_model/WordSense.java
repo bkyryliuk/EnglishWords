@@ -1,4 +1,4 @@
-package com.english.englishwords.app.pojo;
+package com.english.englishwords.app.data_model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

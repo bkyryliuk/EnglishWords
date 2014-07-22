@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.english.englishwords.app.pojo.Word;
+import com.english.englishwords.app.data_model.Word;
 
 
 public class ErrorActivity extends Activity {

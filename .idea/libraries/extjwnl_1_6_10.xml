@@ -4,8 +4,6 @@
       <root url="jar://$PROJECT_DIR$/app/lib/extjwnl-1.6.10.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/Downloads/extjwnl-master.zip!/extjwnl-master/extjwnl/src/main/java" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

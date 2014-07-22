@@ -1,6 +1,6 @@
 package com.english.englishwords.app.algo;
 
-import com.english.englishwords.app.pojo.Word;
+import com.english.englishwords.app.data_model.Word;
 
 import java.util.List;
 

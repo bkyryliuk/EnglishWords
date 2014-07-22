@@ -23,8 +23,8 @@ import android.widget.Toast;
 import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.excerciseproviders.DefinitionExerciseProvider;
 import com.english.englishwords.app.excerciseproviders.ExerciseProvider;
-import com.english.englishwords.app.pojo.Exercise;
-import com.english.englishwords.app.pojo.WordQueue;
+import com.english.englishwords.app.data_model.Exercise;
+import com.english.englishwords.app.data_model.WordQueue;
 
 import java.util.ArrayList;
 import java.util.List;

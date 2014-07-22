@@ -1,4 +1,4 @@
-package com.english.englishwords.app.pojo;
+package com.english.englishwords.app.data_model;
 
 /**
  * Created by bogdank on 4/6/14.
