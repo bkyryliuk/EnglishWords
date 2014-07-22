@@ -4,18 +4,18 @@
     <item
         dex="C:\Users\Rage\AndroidProjects\EnglishWords\app\build\intermediates\pre-dexed\debug\extjwnl-1.6.10-52a18e66cfd813515c04e19c856270bcf9213398.jar"
         jar="C:\Users\Rage\AndroidProjects\EnglishWords\app\lib\extjwnl-1.6.10.jar"
-        jumboMode="false" revision="19.1.0" sha1="f0f8429380efd0fd8632504368d2380754eecfdf" />
+        jumboMode="false" revision="19.1.0" sha1="f0f8429380efd0fd8632504368d2380754eecfdf"/>
     <item
         dex="C:\Users\Rage\AndroidProjects\EnglishWords\app\build\intermediates\pre-dexed\debug\extjwnl-utilities-1.6.10-ce38d8fe5f6b7cfd75f7bca930defe4cb437de4a.jar"
         jar="C:\Users\Rage\AndroidProjects\EnglishWords\app\lib\extjwnl-utilities-1.6.10.jar"
-        jumboMode="false" revision="19.1.0" sha1="e955e84a01911d17e547131c3bac0eb4835ac714" />
+        jumboMode="false" revision="19.1.0" sha1="e955e84a01911d17e547131c3bac0eb4835ac714"/>
     <item
         dex="C:\Users\Rage\AndroidProjects\EnglishWords\app\build\intermediates\pre-dexed\debug\concurrentlinkedhashmap-lru-1.3.2-bedc244b7b55b48a4fa1605e4206f8bfe32ea2f1.jar"
         jar="C:\Users\Rage\AndroidProjects\EnglishWords\app\lib\concurrentlinkedhashmap-lru-1.3.2.jar"
-        jumboMode="false" revision="19.1.0" sha1="ce9b04e15bb9999cc0a37807a4aeb57df289330c" />
+        jumboMode="false" revision="19.1.0" sha1="ce9b04e15bb9999cc0a37807a4aeb57df289330c"/>
     <item
         dex="C:\Users\Rage\AndroidProjects\EnglishWords\app\build\intermediates\pre-dexed\debug\support-v4-19.1.0-78b49be7219bc9e5e68f62444c9d68a5a5312084.jar"
         jar="C:\Users\Rage\AppData\Local\Android\android-studio1\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
-        jumboMode="false" revision="19.1.0" sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67" />
+        jumboMode="false" revision="19.1.0" sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
 
 </pre-dex-items>

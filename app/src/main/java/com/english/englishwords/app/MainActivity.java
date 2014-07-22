@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.english.englishwords.app.dao.WordNetWordDAO;
-import com.english.englishwords.app.excerciseproviders.DefinitionExerciseProvider;
-import com.english.englishwords.app.excerciseproviders.ExerciseProvider;
+import com.english.englishwords.app.excercise_providers.DefinitionExerciseProvider;
+import com.english.englishwords.app.excercise_providers.ExerciseProvider;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.WordQueue;
 

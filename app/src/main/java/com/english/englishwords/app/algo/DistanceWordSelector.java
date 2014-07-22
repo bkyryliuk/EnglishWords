@@ -22,27 +22,30 @@ public class DistanceWordSelector extends WordSelector {
   }
 
   @Override
-  public List<Word> SelectNClosestWords(Word word, List<Word> allWords, int number_to_select) {
+  public List<String> SelectNClosestWords(
+      String word, List<String> allWords, int number_to_select) {
     // TODO(Bogdan) replace 10000 with the constant defining the size of the dictionary
-    PriorityQueue<Pair<Word, Integer>> priorityQueue =
-        new PriorityQueue<Pair<Word, Integer>>(
-            10000, new Comparator<Pair<Word, Integer>>() {
+    // krasikov: Why PriorityQueue? why not ArrayList + sorting?
+    PriorityQueue<Pair<String, Integer>> priorityQueue =
+        new PriorityQueue<Pair<String, Integer>>(
+            10000, new Comparator<Pair<String, Integer>>() {
           @Override
-          public int compare(Pair<Word, Integer> lhs, Pair<Word, Integer> rhs) {
+          public int compare(Pair<String, Integer> lhs, Pair<String, Integer> rhs) {
             return lhs.second - rhs.second;
           }
         }
         );
-    for (Word w : allWords) {
-      Pair<Word, Integer> wordWithDistance =
-          new Pair<Word, Integer>(w, distanceCalculator.GetDistance(w.getWord(), word.getWord()));
+    for (String w : allWords) {
+      Pair<String, Integer> wordWithDistance =
+          new Pair<String, Integer>(w, distanceCalculator.GetDistance(w, word));
       priorityQueue.add(wordWithDistance);
     }
 
-    List<Word> selectedWords = new ArrayList<Word>();
+    List<String> selectedWords = new ArrayList<String>();
     for (int i = 0; i < number_to_select; i++) {
-      Pair<Word, Integer> pair = priorityQueue.poll();
+      Pair<String, Integer> pair = priorityQueue.poll();
       // eliminate the words with the same spelling
+      // krasikov: I guess this can be moved outside of the for loop.
       while (pair.second == 0) {
         pair = priorityQueue.poll();
       }

@@ -14,6 +14,6 @@ abstract class WordSelector {
     this.distanceCalculator = distanceCalculator;
   }
 
-  public abstract List<Word> SelectNClosestWords(
-      Word word, List<Word> allWords, int number_of_words);
+  public abstract List<String> SelectNClosestWords(
+      String word, List<String> allWords, int number_of_words);
 }

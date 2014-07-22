@@ -12,7 +12,7 @@ import java.util.Random;
  * Created by rage on 11.05.14.
  */
 public class RandomWordDAO implements WordDAO {
-    @Override
+  @Override
   public Word getWord(String word) {
     Word wordValue = GenerateRandomWord(word);
     Random r = new Random();
