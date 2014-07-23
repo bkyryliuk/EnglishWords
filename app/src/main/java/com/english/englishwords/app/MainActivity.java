@@ -183,7 +183,7 @@ public class MainActivity extends Activity
       if (words.size() > exerciseNumInCurrentSession) {
         word = words.get(exerciseNumInCurrentSession);
       } else {
-        Log.e(this.getClass().getSimpleName(), "Cannot get the words to learn");
+        Log.e(this.getClass().getSimpleName(), "Learned all the words!");
       }
       System.out.println("learn: " + word);
       exercise = exerciseProvider.generateExerciseForWord(word);

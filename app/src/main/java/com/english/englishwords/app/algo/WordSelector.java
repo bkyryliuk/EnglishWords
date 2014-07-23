@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * The abstract class that takes provides the interface to pick the closest words to the given one
  */
-abstract class WordSelector {
+public abstract class WordSelector {
   protected DistanceCalculatorInterface distanceCalculator;
 
   WordSelector(DistanceCalculatorInterface distanceCalculator) {

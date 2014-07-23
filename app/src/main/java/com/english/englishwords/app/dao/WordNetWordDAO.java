@@ -9,6 +9,7 @@ import com.english.englishwords.app.data_model.WordSense;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.data.IndexWordSet;
+import net.sf.extjwnl.data.Synset;
 import net.sf.extjwnl.dictionary.Dictionary;
 
 import java.util.ArrayList;
@@ -27,6 +28,20 @@ public class WordNetWordDAO implements WordDAO {
     }
   }
 
+  public String extractSubstring(String gloss, Boolean inQuotes) {
+    StringBuilder definition = new StringBuilder();
+    int openedQuotes = 0;
+    for (char ch : gloss.toCharArray()) {
+      if (ch == '\"') {
+        openedQuotes++;
+      }
+      if ((openedQuotes % 2 == 1) == inQuotes) {
+        definition.append(ch);
+      }
+    }
+    return definition.toString();
+  }
+
   @Override
   public Word getWord(String wordString) {
     Word word = new Word(wordString);
@@ -34,18 +49,19 @@ public class WordNetWordDAO implements WordDAO {
       IndexWordSet indexWordSet = dictionary.lookupAllIndexWords(wordString);
       for (IndexWord indexWord : indexWordSet.getIndexWordArray()) {
         System.out.println(indexWord.getLemma() + " " + indexWord.getPOS() + " " + indexWord.getSenses().size());
-        ArrayList<String> synonyms = new ArrayList<String>();
-        // TODO(krasikov): add synonyms.
-        synonyms.add("synonym " + wordString);
-        ArrayList<String> examples = new ArrayList<String>();
-        examples.add("example " + wordString);
-        // TODO(krasikov): add examples.
-        String definition = wordString + " definition.";
         if (indexWord.getSenses().size() > 0) {
-          definition = indexWord.getSenses().get(0).getGloss();
-        } else {
           Log.v(this.getClass().toString(), "no senses in the word" + wordString);
         }
+        // Note(krasikov): take only first synset for now.
+        Synset synset = indexWord.getSenses().get(0);
+        String definition;
+        ArrayList<String> synonyms = new ArrayList<String>();
+        for (net.sf.extjwnl.data.Word synonym : synset.getWords()) {
+          synonyms.add(synonym.getLemma());
+        }
+        ArrayList<String> examples = new ArrayList<String>();
+        examples.add(extractSubstring(synset.getGloss(), true));
+        definition = extractSubstring(synset.getGloss(), false);
         word.getSenses().add(new WordSense(wordString, definition, examples, synonyms));
       }
     } catch (JWNLException e) {

@@ -2,6 +2,7 @@ package com.english.englishwords.app.excercise_providers;
 
 import com.english.englishwords.app.algo.DistanceWordSelector;
 import com.english.englishwords.app.algo.LevenshteinDistanceCalculator;
+import com.english.englishwords.app.algo.WordSelector;
 import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.Word;
@@ -25,10 +26,10 @@ public class DefinitionExerciseProvider implements ExerciseProvider {
 
   public Exercise generateExerciseForWord(String wordToLearn) {
     // TODO(Bogdan) make some sort of mixed selector to be used here (pick related words based on multiple factors)
-    DistanceWordSelector distanceWordSelector = new DistanceWordSelector(
+    WordSelector wordSelector = new DistanceWordSelector(
         new LevenshteinDistanceCalculator());
     // TODO(Bogdan) pass here actual word instead of empty one just with the name
-    List<String> relatedWords = distanceWordSelector.SelectNClosestWords(
+    List<String> relatedWords = wordSelector.SelectNClosestWords(
         wordDao.getWord(wordToLearn).getWord(),
         WordQueue.getInstance().getWordsInProgress(), DEFINITION_EXERCISE_OPTIONS_NUM);
 
