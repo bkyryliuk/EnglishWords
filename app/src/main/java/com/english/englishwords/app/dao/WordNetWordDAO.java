@@ -44,13 +44,14 @@ public class WordNetWordDAO implements WordDAO {
 
   @Override
   public Word getWord(String wordString) {
+    long startTime = System.currentTimeMillis();
     Word word = new Word(wordString);
     try {
       IndexWordSet indexWordSet = dictionary.lookupAllIndexWords(wordString);
       for (IndexWord indexWord : indexWordSet.getIndexWordArray()) {
         System.out.println(indexWord.getLemma() + " " + indexWord.getPOS() + " " + indexWord.getSenses().size());
         if (indexWord.getSenses().size() > 0) {
-          Log.v(this.getClass().toString(), "no senses in the word" + wordString);
+          Log.v(this.getClass().toString(), "no senses for the word '" + wordString + "'");
         }
         // Note(krasikov): take only first synset for now.
         Synset synset = indexWord.getSenses().get(0);
@@ -68,6 +69,7 @@ public class WordNetWordDAO implements WordDAO {
       e.printStackTrace();
       assert false;
     }
+    Log.d("WordNetWordRetrieval", (System.currentTimeMillis() - startTime) + " milliseconds were spend on a word retrieval.");
     return word;
   }
 }
