@@ -29,17 +29,11 @@ public class WordNetWordDAO implements WordDAO {
   }
 
   public String extractSubstring(String gloss, Boolean inQuotes) {
-    StringBuilder definition = new StringBuilder();
-    int openedQuotes = 0;
-    for (char ch : gloss.toCharArray()) {
-      if (ch == '\"') {
-        openedQuotes++;
-      }
-      if ((openedQuotes % 2 == 1) == inQuotes) {
-        definition.append(ch);
-      }
+    int quoteIndex = gloss.indexOf("\"");
+    if (quoteIndex < 0) {
+      quoteIndex = gloss.length();
     }
-    return definition.toString();
+    return inQuotes ? gloss.substring(quoteIndex): gloss.substring(0, quoteIndex);
   }
 
   @Override
@@ -50,7 +44,7 @@ public class WordNetWordDAO implements WordDAO {
       IndexWordSet indexWordSet = dictionary.lookupAllIndexWords(wordString);
       for (IndexWord indexWord : indexWordSet.getIndexWordArray()) {
         System.out.println(indexWord.getLemma() + " " + indexWord.getPOS() + " " + indexWord.getSenses().size());
-        if (indexWord.getSenses().size() > 0) {
+        if (indexWord.getSenses().size() == 0) {
           Log.v(this.getClass().toString(), "no senses for the word '" + wordString + "'");
         }
         // Note(krasikov): take only first synset for now.
