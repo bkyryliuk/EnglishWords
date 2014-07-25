@@ -33,7 +33,8 @@ public class WordNetWordDAO implements WordDAO {
     if (quoteIndex < 0) {
       quoteIndex = gloss.length();
     }
-    return inQuotes ? gloss.substring(quoteIndex): gloss.substring(0, quoteIndex);
+    return inQuotes ? gloss.substring(quoteIndex).replaceAll("\"", "") :
+                      gloss.substring(0, quoteIndex);
   }
 
   @Override

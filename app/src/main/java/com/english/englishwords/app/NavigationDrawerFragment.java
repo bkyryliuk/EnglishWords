@@ -43,7 +43,7 @@ public class NavigationDrawerFragment extends Fragment {
   /**
    * A pointer to the current callbacks instance (the Activity).
    */
-  private NavigationDrawerCallbacks mCallbacks;
+  private NavigationDrawerCallbacks attachedActivity;
 
   /**
    * Helper component that ties the action bar to the navigation drawer.
@@ -135,6 +135,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     // ActionBarDrawerToggle ties together the the proper interactions
     // between the navigation drawer and the action bar app icon.
+    // TODO(krasikov): this should be removed - it isn't visible anyway
     mDrawerToggle = new ActionBarDrawerToggle(
         getActivity(),                    /* host Activity */
         mDrawerLayout,                    /* DrawerLayout object */
@@ -197,8 +198,8 @@ public class NavigationDrawerFragment extends Fragment {
     if (mDrawerLayout != null) {
       mDrawerLayout.closeDrawer(mFragmentContainerView);
     }
-    if (mCallbacks != null) {
-      mCallbacks.onNavigationDrawerItemSelected(position);
+    if (attachedActivity != null) {
+      attachedActivity.onNavigationDrawerItemSelected(position);
     }
   }
 
@@ -206,7 +207,7 @@ public class NavigationDrawerFragment extends Fragment {
   public void onAttach(Activity activity) {
     super.onAttach(activity);
     try {
-      mCallbacks = (NavigationDrawerCallbacks) activity;
+      attachedActivity = (NavigationDrawerCallbacks) activity;
     } catch (ClassCastException e) {
       throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
     }
@@ -215,7 +216,7 @@ public class NavigationDrawerFragment extends Fragment {
   @Override
   public void onDetach() {
     super.onDetach();
-    mCallbacks = null;
+    attachedActivity = null;
   }
 
   @Override
@@ -229,42 +230,6 @@ public class NavigationDrawerFragment extends Fragment {
     super.onConfigurationChanged(newConfig);
     // Forward the new configuration the drawer toggle component.
     mDrawerToggle.onConfigurationChanged(newConfig);
-  }
-
-  @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    // If the drawer is open, show the global app actions in the action bar. See also
-    // showGlobalContextActionBar, which controls the top-left area of the action bar.
-    if (mDrawerLayout != null && isDrawerOpen()) {
-      inflater.inflate(R.menu.global, menu);
-      showGlobalContextActionBar();
-    }
-    super.onCreateOptionsMenu(menu, inflater);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    if (mDrawerToggle.onOptionsItemSelected(item)) {
-      return true;
-    }
-
-    if (item.getItemId() == R.id.action_example) {
-      Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
-  }
-
-  /**
-   * Per the navigation drawer design guidelines, updates the action bar to show the global app
-   * 'context', rather than just what's in the current screen.
-   */
-  private void showGlobalContextActionBar() {
-    ActionBar actionBar = getActionBar();
-    actionBar.setDisplayShowTitleEnabled(true);
-    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-    actionBar.setTitle(R.string.app_name);
   }
 
   private ActionBar getActionBar() {
