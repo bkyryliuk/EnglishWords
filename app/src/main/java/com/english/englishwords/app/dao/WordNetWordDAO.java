@@ -41,6 +41,15 @@ public class WordNetWordDAO implements WordDAO {
   public Word getWord(String wordString) {
     long startTime = System.currentTimeMillis();
     Word word = new Word(wordString);
+    // Note(krasikov): take only a single best synset for now.
+    addSense(word, getMostFrequentSynset(wordString));
+    Log.d("WordNetWordRetrieval", (System.currentTimeMillis() - startTime) + " milliseconds were spend on a word retrieval.");
+    return word;
+  }
+
+  private Synset getMostFrequentSynset(String wordString) {
+    Synset mostFrequentSynset = null;
+    int bestUseCount = -1;
     try {
       IndexWordSet indexWordSet = dictionary.lookupAllIndexWords(wordString);
       for (IndexWord indexWord : indexWordSet.getIndexWordArray()) {
@@ -48,23 +57,33 @@ public class WordNetWordDAO implements WordDAO {
         if (indexWord.getSenses().size() == 0) {
           Log.v(this.getClass().toString(), "no senses for the word '" + wordString + "'");
         }
-        // Note(krasikov): take only first synset for now.
-        Synset synset = indexWord.getSenses().get(0);
-        String definition;
-        ArrayList<String> synonyms = new ArrayList<String>();
-        for (net.sf.extjwnl.data.Word synonym : synset.getWords()) {
-          synonyms.add(synonym.getLemma());
+        for (Synset synset : indexWord.getSenses()) {
+          int wordIndex = synset.indexOfWord(wordString);
+          if (wordIndex != -1) {
+            int useCount = synset.getWords().get(wordIndex).getUseCount();
+            if (bestUseCount < useCount) {
+              bestUseCount = useCount;
+              mostFrequentSynset = synset;
+            }
+          }
         }
-        ArrayList<String> examples = new ArrayList<String>();
-        examples.add(extractSubstring(synset.getGloss(), true));
-        definition = extractSubstring(synset.getGloss(), false);
-        word.getSenses().add(new WordSense(wordString, definition, examples, synonyms));
       }
     } catch (JWNLException e) {
       e.printStackTrace();
       assert false;
     }
-    Log.d("WordNetWordRetrieval", (System.currentTimeMillis() - startTime) + " milliseconds were spend on a word retrieval.");
-    return word;
+    return mostFrequentSynset;
+  }
+
+  private void addSense(Word word, Synset synset) {
+    String definition;
+    ArrayList<String> synonyms = new ArrayList<String>();
+    for (net.sf.extjwnl.data.Word synonym : synset.getWords()) {
+      synonyms.add(synonym.getLemma());
+    }
+    ArrayList<String> examples = new ArrayList<String>();
+    examples.add(extractSubstring(synset.getGloss(), true));
+    definition = extractSubstring(synset.getGloss(), false);
+    word.getSenses().add(new WordSense(word.getWord(), definition, examples, synonyms));
   }
 }
