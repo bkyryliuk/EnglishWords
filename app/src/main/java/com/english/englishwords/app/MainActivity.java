@@ -1,6 +1,5 @@
 package com.english.englishwords.app;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.english.englishwords.app.dao.WordNetWordDAO;
+import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.excercise_providers.DefinitionExerciseProvider;
 import com.english.englishwords.app.excercise_providers.ExerciseProvider;
 import com.english.englishwords.app.data_model.Exercise;
@@ -61,8 +59,8 @@ public class MainActivity extends Activity
   public void onNavigationDrawerItemSelected(int position) {
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getFragmentManager();
-    fragmentManager.beginTransaction()
-        .replace(R.id.container, LearningFragment.newInstance(this.getApplicationContext(), position + 1))
+    fragmentManager.beginTransaction().replace(
+        R.id.container, LearningFragment.newInstance(this.getApplicationContext(), position + 1))
         .commit();
   }
 
@@ -86,7 +84,7 @@ public class MainActivity extends Activity
     public LearningFragment(Context context) {
       // TODO(Bogdan) add the empty constructor implementation
       this.exerciseProvider = new DefinitionExerciseProvider(
-          new WordNetWordDAO(context));
+          new WordNetWordDAO(context), new WordStatsDAO(context));
       //new RandomWordDAO());
       createNextExercise();
     }
@@ -104,18 +102,16 @@ public class MainActivity extends Activity
     }
 
     void OnUserClickedAnOption(View rootView, int position) {
-      if (position != exercise.getCorrectOption()) {
-        //TODO(krasikov): update WordStat.
+      if (exerciseProvider.onAnswerGiven(position, exercise)) {
+        exerciseNumInCurrentSession++;
+        createNextExercise();
+        updateView(rootView);
+      } else {
         // change the fragment to display the error screen
         Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
         intent.putExtra("correct answer", exercise.getLearningWord());
         intent.putExtra("clicked answer", exercise.getOptionWords()[position]);
         startActivity(intent);
-      } else {
-        //TODO(krasikov): update WordStat.
-        exerciseNumInCurrentSession++;
-        createNextExercise();
-        updateView(rootView);
       }
     }
 
