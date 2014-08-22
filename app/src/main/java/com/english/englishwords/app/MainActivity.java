@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
-import com.english.englishwords.app.excercise_providers.DefinitionExerciseProvider;
-import com.english.englishwords.app.excercise_providers.ExerciseProvider;
+import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
+import com.english.englishwords.app.excercise_providers.ExerciseManager;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.WordQueue;
 
@@ -75,7 +75,7 @@ public class MainActivity extends Activity
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static int exerciseNumInCurrentSession = 0;
 
-    private final ExerciseProvider exerciseProvider;
+    private final ExerciseManager exerciseManager;
     // updates to this arraylist will update the list view on the screen that is
     // responsible for displaying possible choices
     private final ArrayList<String> options = new ArrayList<String>();
@@ -83,7 +83,7 @@ public class MainActivity extends Activity
 
     public LearningFragment(Context context) {
       // TODO(Bogdan) add the empty constructor implementation
-      this.exerciseProvider = new DefinitionExerciseProvider(
+      this.exerciseManager = new DefinitionExerciseManager(
           new WordNetWordDAO(context), new WordStatsDAO(context));
       //new RandomWordDAO());
       createNextExercise();
@@ -102,7 +102,7 @@ public class MainActivity extends Activity
     }
 
     void OnUserClickedAnOption(View rootView, int position) {
-      if (exerciseProvider.onAnswerGiven(position, exercise)) {
+      if (exerciseManager.onAnswerGiven(position, exercise)) {
         exerciseNumInCurrentSession++;
         createNextExercise();
         updateView(rootView);
@@ -129,7 +129,7 @@ public class MainActivity extends Activity
         Log.e(this.getClass().getSimpleName(), "Learned all the words!");
       }
       System.out.println("learn: " + word);
-      exercise = exerciseProvider.generateExerciseForWord(word);
+      exercise = exerciseManager.generateExerciseForWord(word);
     }
 
     public void updateView(View view) {

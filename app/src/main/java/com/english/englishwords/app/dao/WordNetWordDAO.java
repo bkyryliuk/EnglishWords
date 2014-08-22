@@ -14,9 +14,6 @@ import net.sf.extjwnl.dictionary.Dictionary;
 
 import java.util.ArrayList;
 
-/**
- * Created by rage on 11.05.14.
- */
 public class WordNetWordDAO implements WordDAO {
   private Dictionary dictionary = null;
 

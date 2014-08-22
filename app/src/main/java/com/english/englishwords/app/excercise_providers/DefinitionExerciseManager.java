@@ -8,19 +8,15 @@ import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.Word;
 import com.english.englishwords.app.data_model.WordQueue;
-import com.english.englishwords.app.data_model.WordStats;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Created by bogdank on 4/6/14.
- */
-public class DefinitionExerciseProvider extends ExerciseProvider {
+public class DefinitionExerciseManager extends ExerciseManager {
   private static final int DEFINITION_EXERCISE_OPTIONS_NUM = 6;
 
-  public DefinitionExerciseProvider(WordDAO wordDao, WordStatsDAO wordStatsDAO) {
+  public DefinitionExerciseManager(WordDAO wordDao, WordStatsDAO wordStatsDAO) {
     super(wordStatsDAO, wordDao);
   }
 

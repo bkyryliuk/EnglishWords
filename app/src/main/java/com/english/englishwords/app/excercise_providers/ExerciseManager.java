@@ -5,13 +5,13 @@ import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.WordStats;
 
-//TODO(krasikov): add SynonymExerciseProvider and RootExerciseProvider (it will combine
-// SynonymExerciseProvider and DefinitionExerciseProvider).
-public abstract class ExerciseProvider {
+//TODO(krasikov): add SynonymExerciseManager and RootExerciseManager (it will combine
+// SynonymExerciseManager and DefinitionExerciseManager).
+public abstract class ExerciseManager {
   protected final WordDAO wordDao;
   protected final WordStatsDAO wordStatsDAO;
 
-  public ExerciseProvider(WordStatsDAO wordStatsDAO, WordDAO wordDao) {
+  public ExerciseManager(WordStatsDAO wordStatsDAO, WordDAO wordDao) {
     this.wordStatsDAO = wordStatsDAO;
     this.wordDao = wordDao;
   }
