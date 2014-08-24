@@ -26,8 +26,9 @@ public class WordStatsDAO {
 
   public void update(WordStats wordStats) {
     ContentValues values = getContentValues(wordStats.history);
-    dbHelper.getWritableDatabase().update(
-        WORD_STATS_TABLE_NAME, values, WORD_COLUMN_NAME + "=?", new String[] {wordStats.word});
+    values.put(WORD_COLUMN_NAME, wordStats.word);
+    dbHelper.getWritableDatabase().replace(
+        WORD_STATS_TABLE_NAME, null, values);
   }
 
   private ContentValues getContentValues(ArrayList<Pair<Date, Boolean>> history) {
@@ -36,7 +37,6 @@ public class WordStatsDAO {
     for (Pair<Date, Boolean> entry : history) {
       if (dates.length() > 0) {
         dates.append(DELIMITER);
-        successes.append(DELIMITER);
       }
       dates.append(entry.first.getTime());
       successes.append(entry.second ? "1" : "0");
@@ -59,7 +59,7 @@ public class WordStatsDAO {
     cursor.moveToFirst();
     if (!cursor.isAfterLast()) {
       String[] dates = cursor.getString(0).split(DELIMITER);
-      String[] successes = cursor.getString(1).split(DELIMITER);
+      String[] successes = cursor.getString(1).split("");
       assert dates.length == successes.length;
       for (int i = 0; i < dates.length; i++) {
         int milliseconds = Integer.parseInt(dates[i]);

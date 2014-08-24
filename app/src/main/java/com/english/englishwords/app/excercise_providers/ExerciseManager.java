@@ -1,5 +1,7 @@
 package com.english.englishwords.app.excercise_providers;
 
+import android.util.Log;
+
 import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
@@ -22,6 +24,7 @@ public abstract class ExerciseManager {
     WordStats wordStats = wordStatsDAO.getStats(exercise.getLearningWord().getWord());
     boolean success = position != exercise.getCorrectOption();
     wordStats.addEntry(success);
+    Log.d("1", "in onAnswerGiven");
     wordStatsDAO.update(wordStats);
     return success ;
   }
