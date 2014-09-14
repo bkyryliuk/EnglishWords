@@ -62,8 +62,13 @@ public class WordStatsDAO {
       String[] successes = cursor.getString(1).split("");
       assert dates.length == successes.length;
       for (int i = 0; i < dates.length; i++) {
-        int milliseconds = Integer.parseInt(dates[i]);
-        Boolean success = Integer.parseInt(successes[i]) != 0;
+          long milliseconds = Long.parseLong(dates[i]);
+          Boolean success;
+          if (successes[i] == "" || successes[i] == "0") {
+              success = false;
+          } else {
+              success = true;
+          }
         wordStats.history.add(new Pair<Date, Boolean>(new Date(milliseconds), success));
       }
     }

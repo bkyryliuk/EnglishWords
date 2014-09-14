@@ -85,7 +85,6 @@ public class MainActivity extends Activity
       // TODO(Bogdan) add the empty constructor implementation
       this.exerciseManager = new DefinitionExerciseManager(
           new WordNetWordDAO(context), new WordStatsDAO(context));
-      //new RandomWordDAO());
       createNextExercise();
     }
 
@@ -109,6 +108,7 @@ public class MainActivity extends Activity
       } else {
         // change the fragment to display the error screen
         Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
+        // TODO(Bogdan) move strings to the strings.xml
         intent.putExtra("correct answer", exercise.getLearningWord());
         intent.putExtra("clicked answer", exercise.getOptionWords()[position]);
         startActivity(intent);
@@ -126,6 +126,7 @@ public class MainActivity extends Activity
       if (words.size() > exerciseNumInCurrentSession) {
         word = words.get(exerciseNumInCurrentSession);
       } else {
+        // TODO(Bogdan) add the congrats activity
         Log.e(this.getClass().getSimpleName(), "Learned all the words!");
       }
       System.out.println("learn: " + word);

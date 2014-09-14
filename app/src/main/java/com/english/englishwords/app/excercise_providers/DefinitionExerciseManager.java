@@ -21,7 +21,8 @@ public class DefinitionExerciseManager extends ExerciseManager {
   }
 
   public Exercise generateExerciseForWord(String wordToLearn) {
-    // TODO(Bogdan) make some sort of mixed selector to be used here (pick related words based on multiple factors)
+    // TODO(Bogdan) make some sort of mixed selector to be used here
+    // (pick related words based on multiple factors)
     WordSelector wordSelector = new DistanceWordSelector(
         new LevenshteinDistanceCalculator());
     // TODO(Bogdan) pass here actual word instead of empty one just with the name
@@ -50,20 +51,6 @@ public class DefinitionExerciseManager extends ExerciseManager {
     moveCorrectOptionToRandomPosition(exercise);
 
     return exercise;
-  }
-
-  // TODO(krasikov): maybe move this to the base class.
-  void moveCorrectOptionToRandomPosition(Exercise exercise) {
-    Random random = new Random();
-    exercise.setCorrectOption(random.nextInt(exercise.getOptionWords().length));
-
-    Word tmpWord = exercise.getOptionWords()[exercise.getCorrectOption()];
-    exercise.getOptionWords()[exercise.getCorrectOption()] = exercise.getOptionWords()[0];
-    exercise.getOptionWords()[0] = tmpWord;
-
-    String tmpOption = exercise.getOptions()[exercise.getCorrectOption()];
-    exercise.getOptions()[exercise.getCorrectOption()] = exercise.getOptions()[0];
-    exercise.getOptions()[0] = tmpOption;
   }
 
   private Word[] generateOptions(Word word, List<String> relatedWords) {
