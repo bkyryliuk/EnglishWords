@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class WordStatsDAO {
   SQLiteOpenHelper dbHelper;
-  final String DELIMITER = ";;";
+  final String DELIMITER = ";";
   public static final String WORD_STATS_TABLE_NAME = "word_stats";
   public static final String WORD_COLUMN_NAME = "word";
   public static final String DATES_COLUMN_NAME = "dates";
@@ -27,8 +27,7 @@ public class WordStatsDAO {
   public void update(WordStats wordStats) {
     ContentValues values = getContentValues(wordStats.history);
     values.put(WORD_COLUMN_NAME, wordStats.word);
-    dbHelper.getWritableDatabase().replace(
-        WORD_STATS_TABLE_NAME, null, values);
+    dbHelper.getWritableDatabase().replace(WORD_STATS_TABLE_NAME, null, values);
   }
 
   private ContentValues getContentValues(ArrayList<Pair<Date, Boolean>> history) {
@@ -59,16 +58,11 @@ public class WordStatsDAO {
     cursor.moveToFirst();
     if (!cursor.isAfterLast()) {
       String[] dates = cursor.getString(0).split(DELIMITER);
-      String[] successes = cursor.getString(1).split("");
-      assert dates.length == successes.length;
+      String successes = cursor.getString(1);
+      assert dates.length == successes.length();
       for (int i = 0; i < dates.length; i++) {
-          long milliseconds = Long.parseLong(dates[i]);
-          Boolean success;
-          if (successes[i] == "" || successes[i] == "0") {
-              success = false;
-          } else {
-              success = true;
-          }
+        long milliseconds = Long.parseLong(dates[i]);
+        Boolean success = successes.charAt(i) != '0';
         wordStats.history.add(new Pair<Date, Boolean>(new Date(milliseconds), success));
       }
     }

@@ -13,7 +13,6 @@ import net.sf.extjwnl.data.Synset;
 import net.sf.extjwnl.dictionary.Dictionary;
 
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
 public class WordNetWordDAO implements WordDAO {
   private Dictionary dictionary = null;
@@ -51,33 +50,33 @@ public class WordNetWordDAO implements WordDAO {
     try {
       IndexWordSet indexWordSet = dictionary.lookupAllIndexWords(wordString);
       for (IndexWord indexWord : indexWordSet.getIndexWordArray()) {
-        System.out.println(indexWord.getLemma() + " " + indexWord.getPOS() + " " + indexWord.getSenses().size());
+        Log.d(getClass().getCanonicalName(),
+            indexWord.getLemma() + " " + indexWord.getPOS() + " " + indexWord.getSenses().size());
+        // TODO(krasikov): remove this check - presumably wordnet never returns index word with no
+        // synsets.
         if (indexWord.getSenses().size() == 0) {
           Log.e(getClass().getCanonicalName(), "no senses for the word '" + wordString + "'");
+          throw new IllegalArgumentException();
         }
         for (Synset synset : indexWord.getSenses()) {
-          Log.v(getClass().getCanonicalName(), "the synset is " + synset.toString());
-          int synsetUseCount = 0;  // sum of the use of all words with the same lemma of the synset
-          for(net.sf.extjwnl.data.Word wordFromSynset : synset.getWords()) {
-            if(indexWord.getLemma().contentEquals(wordFromSynset.getLemma())) {
-              synsetUseCount += wordFromSynset.getUseCount();
-            }
+          int wordIndex = synset.indexOfWord(wordString);
+          if (wordIndex == -1) {
+            // This can happen when original wordString e.g. 'dos' gets converted to another lemma
+            // e.g. 'do'. So we need to ignore index words.
+            break;
           }
-          if (bestUseCount < synsetUseCount) {
-            bestUseCount = synsetUseCount;
+          // Get synset for which word has the most frequent use.
+          int useCount = synset.getWords().get(wordIndex).getUseCount();
+          if (bestUseCount < useCount) {
+            bestUseCount = useCount;
             mostFrequentSynset = synset;
-          }
-          // TODO(Bogdan) make fancy logging to accumulate incorrect data.
-          // log unusual cases where actual word is not found in the synset.
-          // may happen for instance for the verb forms like be and was.
-          if (synset.indexOfWord(wordString) == -1) {
-              Log.e(getClass().getCanonicalName(), "word " + wordString + " cannot be found in the synset " + synset.toString());
           }
         }
       }
     } catch (JWNLException e) {
       e.printStackTrace();
-      assert false;
+      // exit application - maybe upon restart it will work? =)
+      throw new IllegalArgumentException();
     }
     return mostFrequentSynset;
   }
@@ -85,9 +84,6 @@ public class WordNetWordDAO implements WordDAO {
   private void addSense(Word word, Synset synset) {
     String definition;
     ArrayList<String> synonyms = new ArrayList<String>();
-    if (synset == null) {
-        Log.e(getClass().getCanonicalName(), "Synset is null for the word " + word.getWord());
-    }
     for (net.sf.extjwnl.data.Word synonym : synset.getWords()) {
       synonyms.add(synonym.getLemma());
     }
