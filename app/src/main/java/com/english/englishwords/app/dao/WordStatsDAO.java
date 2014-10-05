@@ -12,61 +12,66 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class WordStatsDAO {
-  SQLiteOpenHelper dbHelper;
-  final String DELIMITER = ";";
-  public static final String WORD_STATS_TABLE_NAME = "word_stats";
-  public static final String WORD_COLUMN_NAME = "word";
-  public static final String DATES_COLUMN_NAME = "dates";
-  public static final String SUCCESSES_COLUMN_NAME = "successes";
+    public static final String WORD_STATS_TABLE_NAME = "word_stats";
+    public static final String WORD_COLUMN_NAME = "word";
+    public static final String DATES_COLUMN_NAME = "dates";
+    public static final String SUCCESSES_COLUMN_NAME = "successes";
+    final String DELIMITER = ";";
+    SQLiteOpenHelper dbHelper;
 
 
-  public WordStatsDAO(Context context) {
-    this.dbHelper = new SQLLiteHelper(context);
-  }
-
-  public void update(WordStats wordStats) {
-    ContentValues values = getContentValues(wordStats.history);
-    values.put(WORD_COLUMN_NAME, wordStats.word);
-    dbHelper.getWritableDatabase().replace(WORD_STATS_TABLE_NAME, null, values);
-  }
-
-  private ContentValues getContentValues(ArrayList<Pair<Date, Boolean>> history) {
-    StringBuilder dates = new StringBuilder();
-    StringBuilder successes = new StringBuilder();
-    for (Pair<Date, Boolean> entry : history) {
-      if (dates.length() > 0) {
-        dates.append(DELIMITER);
-      }
-      dates.append(entry.first.getTime());
-      successes.append(entry.second ? "1" : "0");
+    public WordStatsDAO(Context context) {
+        this.dbHelper = new SQLLiteHelper(context);
     }
-    ContentValues contentValues = new ContentValues();
-    contentValues.put(DATES_COLUMN_NAME, dates.toString());
-    contentValues.put(SUCCESSES_COLUMN_NAME, successes.toString());
-    return contentValues;
-  }
 
-  public WordStats getStats(String word) {
-    WordStats wordStats = new WordStats(word);
-    Cursor cursor = dbHelper.getReadableDatabase().query(
-        WORD_STATS_TABLE_NAME,
-        new String[] {DATES_COLUMN_NAME, SUCCESSES_COLUMN_NAME},
-        WORD_COLUMN_NAME + "=?", new String[] { word }, null, null, null, null);
-    if (cursor == null) {
-      return wordStats;
+    public void update(WordStats wordStats) {
+        ContentValues values = getContentValues(wordStats.history);
+        values.put(WORD_COLUMN_NAME, wordStats.word);
+        dbHelper.getWritableDatabase().replace(WORD_STATS_TABLE_NAME, null, values);
     }
-    cursor.moveToFirst();
-    if (!cursor.isAfterLast()) {
-      String[] dates = cursor.getString(0).split(DELIMITER);
-      String successes = cursor.getString(1);
-      assert dates.length == successes.length();
-      for (int i = 0; i < dates.length; i++) {
-        long milliseconds = Long.parseLong(dates[i]);
-        Boolean success = successes.charAt(i) != '0';
-        wordStats.history.add(new Pair<Date, Boolean>(new Date(milliseconds), success));
-      }
+
+    private ContentValues getContentValues(ArrayList<Pair<Date, Boolean>> history) {
+        StringBuilder dates = new StringBuilder();
+        StringBuilder successes = new StringBuilder();
+        for (Pair<Date, Boolean> entry : history) {
+            if (dates.length() > 0) {
+                dates.append(DELIMITER);
+            }
+            dates.append(entry.first.getTime());
+            successes.append(entry.second ? "1" : "0");
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DATES_COLUMN_NAME, dates.toString());
+        contentValues.put(SUCCESSES_COLUMN_NAME, successes.toString());
+        return contentValues;
     }
-    cursor.close();
-    return wordStats;
-  }
+
+    public WordStats getStats(String word) {
+        WordStats wordStats = new WordStats(word);
+        Cursor cursor = dbHelper.getReadableDatabase().query(
+                WORD_STATS_TABLE_NAME,
+                new String[]{DATES_COLUMN_NAME, SUCCESSES_COLUMN_NAME},
+                WORD_COLUMN_NAME + "=?", new String[]{word}, null, null, null, null);
+        if (cursor == null) {
+            return wordStats;
+        }
+        cursor.moveToFirst();
+        if (!cursor.isAfterLast()) {
+            String[] dates = cursor.getString(0).split(DELIMITER);
+            String successes = cursor.getString(1);
+            assert dates.length == successes.length();
+            for (int i = 0; i < dates.length; i++) {
+                long milliseconds = Long.parseLong(dates[i]);
+                Boolean success = successes.charAt(i) != '0';
+                wordStats.history.add(new Pair<Date, Boolean>(new Date(milliseconds), success));
+            }
+        }
+        cursor.close();
+        return wordStats;
+    }
+
+    public boolean LearningStarted() {
+        // TODO(Bogdan) implement the method using shared storage
+        return true;
+    }
 }

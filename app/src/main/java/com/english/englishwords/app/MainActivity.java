@@ -3,7 +3,6 @@ package com.english.englishwords.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -19,10 +18,10 @@ import android.widget.Toast;
 
 import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
-import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
-import com.english.englishwords.app.excercise_providers.ExerciseManager;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.WordQueue;
+import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
+import com.english.englishwords.app.excercise_providers.ExerciseManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,9 @@ public class MainActivity extends Activity
 
     // Initialize singleton for word queue from original_word_order.txt or from local storage
     // (if application was in use before).
-    WordQueue.initialize(getApplicationContext());
+      if (WordQueue.getInstance() == null) {
+          WordQueue.initialize(getApplicationContext());
+      }
 
     setContentView(R.layout.activity_main);
 
@@ -53,6 +54,11 @@ public class MainActivity extends Activity
     attachedFragment.setUp(
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
+      if (WordQueue.getInstance().GetPosition() <= 0) {
+          Intent intent = new Intent(this.getApplicationContext(), InitialTest.class);
+          startActivity(intent);
+          return;
+      }
   }
 
   @Override
@@ -60,8 +66,7 @@ public class MainActivity extends Activity
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getFragmentManager();
     fragmentManager.beginTransaction().replace(
-        R.id.container, LearningFragment.newInstance(this.getApplicationContext(), position + 1))
-        .commit();
+            R.id.container, LearningFragment.newInstance(position + 1)).commit();
   }
 
   /**
@@ -73,32 +78,39 @@ public class MainActivity extends Activity
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+      private static final int lessonSize = 6;
     private static int exerciseNumInCurrentSession = 0;
-
-    private final ExerciseManager exerciseManager;
     // updates to this arraylist will update the list view on the screen that is
     // responsible for displaying possible choices
     private final ArrayList<String> options = new ArrayList<String>();
+      private ExerciseManager exerciseManager;
     private Exercise exercise = null;
 
-    public LearningFragment(Context context) {
+      public LearningFragment() {
       // TODO(Bogdan) add the empty constructor implementation
-      this.exerciseManager = new DefinitionExerciseManager(
-          new WordNetWordDAO(context), new WordStatsDAO(context));
-      createNextExercise();
     }
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static LearningFragment newInstance(Context context, int sectionNumber) {
-      LearningFragment fragment = new LearningFragment(context);
+    public static LearningFragment newInstance(int sectionNumber) {
+        LearningFragment fragment = new LearningFragment();
       Bundle args = new Bundle();
       args.putInt(ARG_SECTION_NUMBER, sectionNumber);
       fragment.setArguments(args);
       return fragment;
     }
+
+      @Override
+      public void onAttach(Activity activity) {
+          super.onAttach(activity);
+          this.exerciseManager = new DefinitionExerciseManager(
+                  new WordNetWordDAO(activity.getApplicationContext()),
+                  new WordStatsDAO(activity.getApplicationContext()));
+
+          createNextExercise();
+      }
 
     void OnUserClickedAnOption(View rootView, int position) {
       if (exerciseManager.onAnswerGiven(position, exercise)) {
@@ -129,8 +141,14 @@ public class MainActivity extends Activity
         // TODO(Bogdan) add the congrats activity
         Log.e(this.getClass().getSimpleName(), "Learned all the words!");
       }
-      System.out.println("learn: " + word);
-      exercise = exerciseManager.generateExerciseForWord(word);
+        System.out.println("learning: " + word);
+
+        if (exerciseNumInCurrentSession == lessonSize) {
+            exerciseNumInCurrentSession = 0;
+            // TODO(bogdank) end the lesson and show the stats
+        } else {
+            exercise = exerciseManager.generateExerciseForWord(word);
+        }
     }
 
     public void updateView(View view) {

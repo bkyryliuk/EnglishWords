@@ -1,6 +1,7 @@
 package com.english.englishwords.app.data_model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.english.englishwords.app.InitializationHelper;
 
@@ -22,7 +23,6 @@ public class WordQueue {
   private List<String> wordsInProgress;
   // Words that considered to be learned.
   private List<String> learnedWords;
-
 
   private WordQueue() {
   }
@@ -81,5 +81,23 @@ public class WordQueue {
 
   public List<String> getLearnedWords() {
     return learnedWords;
+  }
+
+    public int GetPosition() {
+        return learnedWords.size();
+    }
+
+    public void SetPosition(int pos) {
+        Log.e(getClass().getCanonicalName(), "setting " + Integer.toString(pos));
+        Log.e(getClass().getCanonicalName(), "learned words " + Integer.toString(learnedWords.size()));
+        int shift = pos - learnedWords.size();
+        if (shift < 0)
+            return;
+        for (int i = 0; i < shift; i++) {
+            Log.e(getClass().getCanonicalName(), Integer.toString(i));
+            learnedWords.add(wordsInProgress.get(0));
+            wordsInProgress.remove(0);
+        }
+        Log.e(getClass().getCanonicalName(), "Set the value " + Integer.toString(GetPosition()));
   }
 }
