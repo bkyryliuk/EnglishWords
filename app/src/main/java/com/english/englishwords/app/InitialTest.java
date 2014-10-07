@@ -20,8 +20,8 @@ public class InitialTest extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial_test);
 
-        Button buttonOne = (Button) findViewById(R.id.level_submit_button);
-        buttonOne.setOnClickListener(new Button.OnClickListener() {
+        Button levelSubmitButton = (Button) findViewById(R.id.level_submit_button);
+        levelSubmitButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 EditText text = (EditText) findViewById(R.id.user_level);
                 Log.e(getClass().getCanonicalName(), text.getText().toString());

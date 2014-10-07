@@ -146,6 +146,9 @@ public class MainActivity extends Activity
         if (exerciseNumInCurrentSession == lessonSize) {
             exerciseNumInCurrentSession = 0;
             // TODO(bogdank) end the lesson and show the stats
+            Intent intent = new Intent(this.getActivity().getApplicationContext(),
+                    LessonEnding.class);
+            startActivity(intent);
         } else {
             exercise = exerciseManager.generateExerciseForWord(word);
         }
