@@ -77,9 +77,16 @@ public class MainActivity extends Activity
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
-      private static final int lessonSize = 6;
+    // const
+    public static final String ARG_SECTION_NUMBER = "section_number";
+      public static final String WORDS_IN_LESSON = "words_in_lesson";
+      private static final int lessonSize = 2;
+
+      // class variables
+      // TODO(bogdan) store the values if the activity dies and restore the in on create
     private static int exerciseNumInCurrentSession = 0;
+      private static ArrayList<String> wordsInLesson = new ArrayList<String>();
+
     // updates to this arraylist will update the list view on the screen that is
     // responsible for displaying possible choices
     private final ArrayList<String> options = new ArrayList<String>();
@@ -108,7 +115,9 @@ public class MainActivity extends Activity
           this.exerciseManager = new DefinitionExerciseManager(
                   new WordNetWordDAO(activity.getApplicationContext()),
                   new WordStatsDAO(activity.getApplicationContext()));
-
+          if (exerciseNumInCurrentSession == 0) {
+              wordsInLesson.clear();
+          }
           createNextExercise();
       }
 
@@ -129,28 +138,30 @@ public class MainActivity extends Activity
 
     //TODO(krasikov): move this method to MemorizationDecider.
     private void createNextExercise() {
-      // TODO(krasikov): Pick the word from WordQueue with highest learning priority.
-      if (WordQueue.getInstance().getWordsInProgress() == null) {
-        System.out.println("words in progress are null");
-      }
-      List<String> words = WordQueue.getInstance().getWordsInProgress();
-      String word = "";
-      if (words.size() > exerciseNumInCurrentSession) {
-        word = words.get(exerciseNumInCurrentSession);
-      } else {
-        // TODO(Bogdan) add the congrats activity
-        Log.e(this.getClass().getSimpleName(), "Learned all the words!");
-      }
-        System.out.println("learning: " + word);
+        // TODO(krasikov): Pick the word from WordQueue with highest learning priority.
+        if (WordQueue.getInstance().getWordsInProgress() == null) {
+            System.out.println("words in progress are null");
+        }
 
-        if (exerciseNumInCurrentSession == lessonSize) {
+        if (exerciseNumInCurrentSession < lessonSize) {
+            List<String> words = WordQueue.getInstance().getWordsInProgress();
+            String word = "";
+            if (words.size() > exerciseNumInCurrentSession) {
+                word = words.get(exerciseNumInCurrentSession);
+            } else {
+                // TODO(Bogdan) add the congrats activity
+                Log.e(this.getClass().getSimpleName(), "Learned all the words!");
+            }
+            System.out.println("learning: " + word);
+            wordsInLesson.add(word);
+            exercise = exerciseManager.generateExerciseForWord(word);
+        } else {
             exerciseNumInCurrentSession = 0;
-            // TODO(bogdank) end the lesson and show the stats
+            // TODO(bogdank) pass the words learned to the lesson ending activity
             Intent intent = new Intent(this.getActivity().getApplicationContext(),
                     LessonEnding.class);
+            intent.putExtra(WORDS_IN_LESSON, wordsInLesson);
             startActivity(intent);
-        } else {
-            exercise = exerciseManager.generateExerciseForWord(word);
         }
     }
 
