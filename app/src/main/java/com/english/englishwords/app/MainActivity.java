@@ -17,22 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.english.englishwords.app.dao.WordNetWordDAO;
-import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
-import com.english.englishwords.app.data_model.WordQueue;
+import com.english.englishwords.app.data_model.LearningManager;
 import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
 import com.english.englishwords.app.excercise_providers.ExerciseManager;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends Activity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-  /**
-   * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-   */
   private NavigationDrawerFragment attachedFragment;
 
   @Override
@@ -41,9 +36,9 @@ public class MainActivity extends Activity
 
     // Initialize singleton for word queue from original_word_order.txt or from local storage
     // (if application was in use before).
-      if (WordQueue.getInstance() == null) {
-          WordQueue.initialize(getApplicationContext());
-      }
+    if (LearningManager.getInstance() == null) {
+      LearningManager.initialize(getApplicationContext());
+    }
 
     setContentView(R.layout.activity_main);
 
@@ -54,11 +49,11 @@ public class MainActivity extends Activity
     attachedFragment.setUp(
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
-      if (WordQueue.getInstance().GetPosition() <= 0) {
-          Intent intent = new Intent(this.getApplicationContext(), InitialTest.class);
-          startActivity(intent);
-          return;
-      }
+    if (LearningManager.getInstance().accomplishedExercisesNum() == 0) {
+      Intent intent = new Intent(this.getApplicationContext(), InitialTest.class);
+      startActivity(intent);
+      return;
+    }
   }
 
   @Override
@@ -66,35 +61,21 @@ public class MainActivity extends Activity
     // update the main content by replacing fragments
     FragmentManager fragmentManager = getFragmentManager();
     fragmentManager.beginTransaction().replace(
-            R.id.container, LearningFragment.newInstance(position + 1)).commit();
+        R.id.container, LearningFragment.newInstance(position + 1)).commit();
   }
 
-  /**
-   * A placeholder fragment containing a simple view.
-   */
   public static class LearningFragment extends Fragment {
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    // const
-    public static final String ARG_SECTION_NUMBER = "section_number";
-      public static final String WORDS_IN_LESSON = "words_in_lesson";
-      private static final int lessonSize = 2;
-
-      // class variables
-      // TODO(bogdan) store the values if the activity dies and restore the in on create
-    private static int exerciseNumInCurrentSession = 0;
-      private static ArrayList<String> wordsInLesson = new ArrayList<String>();
-
+    private static final String ARG_SECTION_NUMBER = "section_number";
+    public static final String WORDS_IN_LESSON = "words_in_lesson";
+    private static final int lessonSize = 6;
+    private static int exercisesPassedInCurrentSession = 0;
     // updates to this arraylist will update the list view on the screen that is
     // responsible for displaying possible choices
     private final ArrayList<String> options = new ArrayList<String>();
-      private ExerciseManager exerciseManager;
+    private ExerciseManager exerciseManager;
     private Exercise exercise = null;
 
-      public LearningFragment() {
-      // TODO(Bogdan) add the empty constructor implementation
+    public LearningFragment() {
     }
 
     /**
@@ -102,28 +83,25 @@ public class MainActivity extends Activity
      * number.
      */
     public static LearningFragment newInstance(int sectionNumber) {
-        LearningFragment fragment = new LearningFragment();
+      LearningFragment fragment = new LearningFragment();
       Bundle args = new Bundle();
       args.putInt(ARG_SECTION_NUMBER, sectionNumber);
       fragment.setArguments(args);
       return fragment;
     }
 
-      @Override
-      public void onAttach(Activity activity) {
-          super.onAttach(activity);
-          this.exerciseManager = new DefinitionExerciseManager(
-                  new WordNetWordDAO(activity.getApplicationContext()),
-                  new WordStatsDAO(activity.getApplicationContext()));
-          if (exerciseNumInCurrentSession == 0) {
-              wordsInLesson.clear();
-          }
-          createNextExercise();
-      }
+    @Override
+    public void onAttach(Activity activity) {
+      super.onAttach(activity);
+      this.exerciseManager = new DefinitionExerciseManager(new WordNetWordDAO(
+          activity.getApplicationContext()), LearningManager.getInstance());
+
+      createNextExercise();
+    }
 
     void OnUserClickedAnOption(View rootView, int position) {
+      exercisesPassedInCurrentSession++;
       if (exerciseManager.onAnswerGiven(position, exercise)) {
-        exerciseNumInCurrentSession++;
         createNextExercise();
         updateView(rootView);
       } else {
@@ -138,31 +116,22 @@ public class MainActivity extends Activity
 
     //TODO(krasikov): move this method to MemorizationDecider.
     private void createNextExercise() {
-        // TODO(krasikov): Pick the word from WordQueue with highest learning priority.
-        if (WordQueue.getInstance().getWordsInProgress() == null) {
-            System.out.println("words in progress are null");
-        }
+      String word = LearningManager.getInstance().popWord();
+      if (word == null) {
+        // TODO(Bogdan) add the congrats activity.
+        Log.e(this.getClass().getSimpleName(), "Learned all the words!");
+        return;
+      }
+      System.out.println("learning: " + word);
 
-        if (exerciseNumInCurrentSession < lessonSize) {
-            List<String> words = WordQueue.getInstance().getWordsInProgress();
-            String word = "";
-            if (words.size() > exerciseNumInCurrentSession) {
-                word = words.get(exerciseNumInCurrentSession);
-            } else {
-                // TODO(Bogdan) add the congrats activity
-                Log.e(this.getClass().getSimpleName(), "Learned all the words!");
-            }
-            System.out.println("learning: " + word);
-            wordsInLesson.add(word);
-            exercise = exerciseManager.generateExerciseForWord(word);
-        } else {
-            exerciseNumInCurrentSession = 0;
-            // TODO(bogdank) pass the words learned to the lesson ending activity
-            Intent intent = new Intent(this.getActivity().getApplicationContext(),
-                    LessonEnding.class);
-            intent.putExtra(WORDS_IN_LESSON, wordsInLesson);
-            startActivity(intent);
-        }
+      if (exercisesPassedInCurrentSession == lessonSize) {
+        exercisesPassedInCurrentSession = 0;
+        // TODO(bogdank) end the lesson and show the stats
+        Intent intent = new Intent(this.getActivity().getApplicationContext(), LessonEnding.class);
+        startActivity(intent);
+      } else {
+        exercise = exerciseManager.generateExerciseForWord(word);
+      }
     }
 
     public void updateView(View view) {

@@ -1,7 +1,5 @@
 package com.english.englishwords.app.algo;
 
-import com.english.englishwords.app.data_model.Word;
-
 import java.util.List;
 
 /**
@@ -15,5 +13,5 @@ public abstract class WordSelector {
   }
 
   public abstract List<String> SelectNClosestWords(
-      String word, List<String> allWords, int number_of_words);
+      String word, String[] allWords, int number_of_words);
 }

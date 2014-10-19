@@ -2,8 +2,6 @@ package com.english.englishwords.app.algo;
 
 import android.util.Pair;
 
-import com.english.englishwords.app.data_model.Word;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -23,7 +21,7 @@ public class DistanceWordSelector extends WordSelector {
 
   @Override
   public List<String> SelectNClosestWords(
-      String word, List<String> allWords, int number_to_select) {
+      String word, String[] allWords, int number_to_select) {
     // TODO(Bogdan) replace 10000 with the constant defining the size of the dictionary
     // krasikov: Why PriorityQueue? why not ArrayList + sorting?
     PriorityQueue<Pair<String, Integer>> priorityQueue =

@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/imageView"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_below="@+id/section_label"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="167dp" />
+        android:layout_marginTop="167dp"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
         android:src="@drawable/latter"
         android:layout_below="@+id/error_exercise_word"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/error_word_image"
         android:layout_alignRight="@+id/error_exercise_word"
-        android:layout_alignEnd="@+id/error_exercise_word" />
+        android:layout_alignEnd="@+id/error_exercise_word"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/error_word_definition_text"
-        android:layout_alignEnd="@+id/error_word_definition_text" />
+        android:layout_alignEnd="@+id/error_word_definition_text"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView" />
+        android:layout_alignEnd="@+id/imageView"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -93,7 +93,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/imageView"
-        android:layout_alignEnd="@+id/imageView" />
+        android:layout_alignEnd="@+id/imageView"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -103,5 +103,5 @@
         android:id="@+id/error_word_examples_text"
         android:layout_below="@+id/error_word_examples"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"/>
 </RelativeLayout>

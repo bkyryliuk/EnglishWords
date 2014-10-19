@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Created by rage on 17.05.14.
- */
 public class InitializationHelper {
   /**
    * Copy the asset at the specified currentFolderOrFile to this app's data directory. If the

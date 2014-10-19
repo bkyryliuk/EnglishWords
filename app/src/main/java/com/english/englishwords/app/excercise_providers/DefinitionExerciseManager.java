@@ -7,17 +7,19 @@ import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.Word;
-import com.english.englishwords.app.data_model.WordQueue;
+import com.english.englishwords.app.data_model.LearningManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class DefinitionExerciseManager extends ExerciseManager {
   private static final int DEFINITION_EXERCISE_OPTIONS_NUM = 6;
 
-  public DefinitionExerciseManager(WordDAO wordDao, WordStatsDAO wordStatsDAO) {
-    super(wordStatsDAO, wordDao);
+  protected final WordDAO wordDao;
+
+  public DefinitionExerciseManager(WordDAO wordDao, LearningManager learningManager) {
+    super(learningManager);
+    this.wordDao = wordDao;
   }
 
   public Exercise generateExerciseForWord(String wordToLearn) {
@@ -28,7 +30,7 @@ public class DefinitionExerciseManager extends ExerciseManager {
     // TODO(Bogdan) pass here actual word instead of empty one just with the name
     List<String> relatedWords = wordSelector.SelectNClosestWords(
         wordDao.getWord(wordToLearn).getWord(),
-        WordQueue.getInstance().getWordsInProgress(), DEFINITION_EXERCISE_OPTIONS_NUM);
+        LearningManager.getInstance().getWordsInProgress(), DEFINITION_EXERCISE_OPTIONS_NUM);
 
     Exercise exercise = new Exercise();
     exercise.setLearningWord(wordDao.getWord(wordToLearn));

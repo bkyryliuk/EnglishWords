@@ -1,7 +1,7 @@
 package com.english.englishwords.app.dao;
 
+import com.english.englishwords.app.data_model.LearningManager;
 import com.english.englishwords.app.data_model.Word;
-import com.english.englishwords.app.data_model.WordQueue;
 import com.english.englishwords.app.data_model.WordSense;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class RandomWordDAO implements WordDAO {
     Random r = new Random();
     List<String> synonyms = new ArrayList<String>();
     for (int j = 0; j < r.nextInt(5); ++j) {
-      synonyms.add(WordQueue.getInstance().getWordsInProgress().get(new Random().nextInt(10000)));
+      synonyms.add(LearningManager.getInstance().getWordsInProgress()[new Random().nextInt(10000)]);
     }
     wordValue.getSenses().get(0).setSynonyms(synonyms);
     return wordValue;
