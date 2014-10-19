@@ -27,17 +27,16 @@ public class LessonEnding extends Activity {
     setContentView(R.layout.activity_lesson_ending);
 
     // TODO(bogdan) set stats
-    LearningManager queue = LearningManager.getInstance();
-    if (queue == null) {
-      LearningManager.initialize(this.getApplicationContext());
-      queue = LearningManager.getInstance();
-    }
-    WordStatsDAO statsDAO = new WordStatsDAO(this.getApplicationContext());
+    LearningManager.initialize(getApplicationContext());
+    LearningManager learningManager = LearningManager.getInstance();
 
-    Log.v(this.getClass().getCanonicalName(), "Current position is " + Integer.toString(queue.getLearnedWordsNum()));
+    Log.v(
+        this.getClass().getCanonicalName(),
+        "Current position is " + Integer.toString(learningManager.getLearnedWordsNum()));
 
-    TextView word_position_text_view = (TextView) findViewById(R.id.activity_lesson_ending_position_number);
-    word_position_text_view.setText(Integer.toString(queue.getLearnedWordsNum()));
+    TextView word_position_text_view =
+        (TextView) findViewById(R.id.activity_lesson_ending_position_number);
+    word_position_text_view.setText(Integer.toString(learningManager.getLearnedWordsNum()));
 
     Bundle bundle = getIntent().getExtras();
     ArrayList<String> wordsInLesson = (ArrayList<String>) bundle.getSerializable(
@@ -49,7 +48,7 @@ public class LessonEnding extends Activity {
     String hardest_word = "";
     for (String word : wordsInLesson) {
       Log.d(this.getClass().getCanonicalName(), "The word processed in the exercise is " + word);
-      WordStats stats = statsDAO.getStats(word);
+      WordStats stats = learningManager.getWordStats(word);
       int score = 0;
       for (Pair<Date, Boolean> result : stats.history) {
         if (result.second) {

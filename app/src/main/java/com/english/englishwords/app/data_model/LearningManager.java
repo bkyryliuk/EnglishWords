@@ -37,31 +37,37 @@ public class LearningManager {
   // In-memory copy of all WordsStats stored by WordStatsDAO. It is used to rank words by learning
   // priority.
   private Dictionary<String, WordStats> wordsStats;
-  private List<String> original_word_list;
 
-  private LearningManager(Context _context) {
-    context = _context;
-    initializeWordStats(context);
-    initializeOriginalWordList(context);
-    initializeLearnedWords(context);
-    initializeWordsInProgress();
-  }
+  private List<String> originalWordList;
 
   // Inits the word queue from res/original_word_order.txt or from previous application runs.
   public static void initialize(Context context) {
-   LearningManager.instance = new LearningManager(context);
+    if (instance == null) {
+      instance = new LearningManager(context);
+    }
   }
 
-  private void initializeOriginalWordList(Context context) {
+  public static LearningManager getInstance() {
+    return instance;
+  }
+
+  private LearningManager(Context _context) {
+    context = _context;
+    initializeWordStats();
+    initializeOriginalWordList();
+    initializeLearnedWords();
+    initializeWordsInProgress();
+  }
+
+  private void initializeOriginalWordList() {
     try {
-      original_word_list =
-          readWordListFromInput(context.getAssets().open("original_word_order.txt"));
+      originalWordList = readWordListFromInput(context.getAssets().open("original_word_order.txt"));
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  private void initializeWordStats(Context context) {
+  private void initializeWordStats() {
     wordStatsDAO = new WordStatsDAO(context);
     wordsStats = new Hashtable<String, WordStats>();
     for (WordStats stats : wordStatsDAO.getStatsForAllWords()) {
@@ -69,12 +75,12 @@ public class LearningManager {
     }
   }
 
-  private void initializeLearnedWords(Context context) {
+  private void initializeLearnedWords() {
     try {
       learnedWords = readWordListFromInput(context.openFileInput("learnedWords.txt"));
     } catch (FileNotFoundException e) {
       // TODO(krasikov): Do we need this? move this to another place.
-      InitializationHelper.copyAsset(context, context.getFilesDir().toString(), "wordnet");
+      InitializationHelper.copyAsset(context, "wordnet", context.getFilesDir().toString());
       learnedWords = new ArrayList<String>();
     } catch (IOException e) {
       e.printStackTrace();
@@ -83,8 +89,8 @@ public class LearningManager {
 
   private void initializeWordsInProgress() {
     wordsInProgress =
-        new PriorityQueue<String>(original_word_list.size(), new WordPriorityComparator());
-    for (String word : original_word_list) {
+        new PriorityQueue<String>(originalWordList.size(), new WordPriorityComparator());
+    for (String word : originalWordList) {
       if (!learnedWords.contains(word)) {
         wordsInProgress.add(word);
       }
@@ -104,10 +110,6 @@ public class LearningManager {
     return wordlist;
   }
 
-  public static LearningManager getInstance() {
-    return instance;
-  }
-
   public String popWord() { return wordsInProgress.poll(); }
 
   public void addWord(String word) { wordsInProgress.add(word); }
@@ -122,6 +124,10 @@ public class LearningManager {
     return wordStatsDAO;
   }
 
+  public WordStats getWordStats(String word) {
+    return wordsStats.get(word);
+  }
+
   public int getLearnedWordsNum() {
     return learnedWords.size();
   }
@@ -130,7 +136,7 @@ public class LearningManager {
     Log.e(getClass().getCanonicalName(), "setting " + Integer.toString(learnedWordsNum));
     Log.e(getClass().getCanonicalName(), "learned words " + Integer.toString(learnedWords.size()));
 
-    learnedWords = original_word_list.subList(0, learnedWordsNum);
+    learnedWords = originalWordList.subList(0, learnedWordsNum);
     saveLearnedWords();
     for (String learnedWord : learnedWords) {
       wordsInProgress.remove(learnedWord);

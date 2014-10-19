@@ -16,8 +16,9 @@ public class InitializationHelper {
    * asset is a directory, its contents are also copied.
    *
    * @param currentFolderOrFile Path to asset, relative to app's assets directory.
+   * @param outDir
    */
-  public static void copyAsset(Context context, String out_dir, String currentFolderOrFile) {
+  public static void copyAsset(Context context, String currentFolderOrFile, String outDir) {
     AssetManager manager = context.getAssets();
 
     // If we have a directory, we make it and recurse. If a file, we copy its
@@ -34,15 +35,15 @@ public class InitializationHelper {
         throw new IOException();
 
       // Make the directory.
-      File dir = new File(out_dir, currentFolderOrFile);
+      File dir = new File(outDir, currentFolderOrFile);
       dir.mkdirs();
 
       // Recurse on the contents.
       for (String entry : contents) {
-        copyAsset(context, out_dir, currentFolderOrFile + "/" + entry);
+        copyAsset(context, currentFolderOrFile + "/" + entry, outDir);
       }
     } catch (IOException e) {
-      copyFileAsset(context, out_dir, currentFolderOrFile);
+      copyFileAsset(context, outDir, currentFolderOrFile);
     }
   }
 
