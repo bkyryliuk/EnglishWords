@@ -1,4 +1,4 @@
-package com.english.englishwords.app.data_model;
+package com.english.englishwords.app.test.learning_manager;
 
 import android.test.InstrumentationTestCase;
 
