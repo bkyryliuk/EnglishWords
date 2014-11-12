@@ -7,7 +7,5 @@ import java.util.List;
 public interface WordStatsDAO {
   void update(WordStats wordStats);
 
-  List<WordStats> getStatsForAllWords();
-
   WordStats getStats(String word);
 }

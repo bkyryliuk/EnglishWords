@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-public class LearningManager implements WordStatsRepository {
+public class LearningManager {
   private static LearningManager instance = null;
 
   // Words that weren't yet learned or weren't even show to the user.
@@ -30,17 +30,13 @@ public class LearningManager implements WordStatsRepository {
 
   private List<String> originalWordList;
 
-  // In-memory copy of all WordsStats stored by WordStatsDAO. It is used to rank words by learning
-  // priority.
-  private Hashtable<String, WordStats> wordsStats;
-
   private WordListsDAO wordListsDAO;
 
   private WordStatsDAO wordStatsDAO;
   private Hashtable<String, Integer> originalWordListToPos;
 
   // Inits the word queue from res/original_word_order.txt or from previous application runs.
-  public static void initialize(WordStatsDAO wordStatsDAO, FileWordListsDAO wordListsDAO) {
+  public static void initialize(WordStatsDAO wordStatsDAO, WordListsDAO wordListsDAO) {
     if (instance == null) {
       instance = new LearningManager(wordListsDAO, wordStatsDAO);
     }
@@ -55,18 +51,11 @@ public class LearningManager implements WordStatsRepository {
     this.wordStatsDAO = wordStatsDAO;
     this.wordListsDAO = wordListsDAO;
 
-    initializeWordStats();
     initializeOriginalWordList();
     initializeLearnedWords();
     initializeWordsInProgress();
   }
 
-  private void initializeWordStats() {
-    wordsStats = new Hashtable<String, WordStats>();
-    for (WordStats stats : this.wordStatsDAO.getStatsForAllWords()) {
-      wordsStats.put(stats.word, stats);
-    }
-  }
 
   private void initializeOriginalWordList() {
     try {
@@ -117,6 +106,11 @@ public class LearningManager implements WordStatsRepository {
     return wordList;
   }
 
+  // TODO(krasikov): maybe get rid of this method.
+  public WordStats getStats(String word) {
+    return wordStatsDAO.getStats(word);
+  }
+
   // TODO(krasikov): move this to WordListDAO maybe.
   public int getPositionInOriginalWordList(String word) {
     return originalWordListToPos.get(word);
@@ -130,15 +124,6 @@ public class LearningManager implements WordStatsRepository {
     // TODO(krasikov): maybe rewrite this to be real words in progress i.e. remove words which
     // wasn't yet show.
     return wordsInProgress.toArray(new String[0]);
-  }
-
-  @Override
-  public WordStats getStats(String word) {
-    WordStats wordStats = wordsStats.get(word);
-    if (wordStats == null) {
-      wordStats = new WordStats(word);
-    }
-    return wordStats;
   }
 
   public int getLearnedWordsNum() {
@@ -171,5 +156,4 @@ public class LearningManager implements WordStatsRepository {
     wordStats.addEntry(success);
     wordStatsDAO.update(wordStats);
   }
-
 }

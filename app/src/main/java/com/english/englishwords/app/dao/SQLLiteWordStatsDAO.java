@@ -9,6 +9,7 @@ import com.english.englishwords.app.data_model.WordStats;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 public class SQLLiteWordStatsDAO implements WordStatsDAO {
@@ -19,8 +20,22 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
   final String DELIMITER = ";";
   SQLiteOpenHelper dbHelper;
 
+  private Hashtable<String, WordStats> wordsStats = new Hashtable<String, WordStats>();
+
   public SQLLiteWordStatsDAO(SQLLiteHelper dbHelper) {
     this.dbHelper = dbHelper;
+
+    for (WordStats stats : this.getStatsForAllWords()) {
+      wordsStats.put(stats.word, stats);
+    }
+  }
+
+  public WordStats getStats(String word) {
+    WordStats wordStats = wordsStats.get(word);
+    if (wordStats == null) {
+      wordStats = new WordStats(word);
+    }
+    return wordStats;
   }
 
   @Override
@@ -46,8 +61,7 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
     return contentValues;
   }
 
-  @Override
-  public List<WordStats> getStatsForAllWords() {
+  private List<WordStats> getStatsForAllWords() {
     List<WordStats> wordsStats = new ArrayList<WordStats>();
     Cursor cursor = dbHelper.getReadableDatabase().query(
         WORD_STATS_TABLE_NAME,
@@ -61,19 +75,19 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
     return wordsStats;
   }
 
-  @Override
-  public WordStats getStats(String word) {
-    WordStats wordStats = new WordStats(word);
-    Cursor cursor = dbHelper.getReadableDatabase().query(
-        WORD_STATS_TABLE_NAME,
-        new String[]{WORD_COLUMN_NAME, DATES_COLUMN_NAME, SUCCESSES_COLUMN_NAME},
-        WORD_COLUMN_NAME + "=?", new String[]{word}, null, null, null, null);
-    if (cursor.moveToFirst()) {
-      wordStats = parseWordStat(cursor);
-    }
-    cursor.close();
-    return wordStats;
-  }
+//  @Override
+//  public WordStats getStats(String word) {
+//    WordStats wordStats = new WordStats(word);
+//    Cursor cursor = dbHelper.getReadableDatabase().query(
+//        WORD_STATS_TABLE_NAME,
+//        new String[]{WORD_COLUMN_NAME, DATES_COLUMN_NAME, SUCCESSES_COLUMN_NAME},
+//        WORD_COLUMN_NAME + "=?", new String[]{word}, null, null, null, null);
+//    if (cursor.moveToFirst()) {
+//      wordStats = parseWordStat(cursor);
+//    }
+//    cursor.close();
+//    return wordStats;
+//  }
 
   private WordStats parseWordStat(Cursor cursor) {
     WordStats wordStats = new WordStats(cursor.getString(cursor.getColumnIndex(WORD_COLUMN_NAME)));
