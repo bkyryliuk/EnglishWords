@@ -8,10 +8,10 @@ public class SQLLiteHelper extends SQLiteOpenHelper {
 
   private static final String WORDSTATS_TABLE_CREATE =
       String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT)",
-          WordStatsDAO.WORD_STATS_TABLE_NAME, WordStatsDAO.WORD_COLUMN_NAME,
-          WordStatsDAO.DATES_COLUMN_NAME, WordStatsDAO.SUCCESSES_COLUMN_NAME);
+          SQLLiteWordStatsDAO.WORD_STATS_TABLE_NAME, SQLLiteWordStatsDAO.WORD_COLUMN_NAME,
+          SQLLiteWordStatsDAO.DATES_COLUMN_NAME, SQLLiteWordStatsDAO.SUCCESSES_COLUMN_NAME);
 
-  SQLLiteHelper(Context context) {
+  public SQLLiteHelper(Context context) {
     super(context, "EnglishLearner", null, 1);
   }
 

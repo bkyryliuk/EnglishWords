@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class WordStats {
   public String word;
+  // TODO(krasikov): maybe replace Date with long.
   public ArrayList<Pair<Date, Boolean>> history = new ArrayList<Pair<Date, Boolean>>();
 
   public WordStats(String word) {

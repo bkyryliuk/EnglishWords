@@ -4,7 +4,6 @@ import com.english.englishwords.app.algo.DistanceWordSelector;
 import com.english.englishwords.app.algo.LevenshteinDistanceCalculator;
 import com.english.englishwords.app.algo.WordSelector;
 import com.english.englishwords.app.dao.WordDAO;
-import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.Word;
 import com.english.englishwords.app.data_model.LearningManager;

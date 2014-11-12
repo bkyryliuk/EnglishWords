@@ -1,8 +1,10 @@
 package com.english.englishwords.app.dao;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.english.englishwords.app.AssetsInitializationHelper;
 import com.english.englishwords.app.data_model.Word;
 import com.english.englishwords.app.data_model.WordSense;
 
@@ -16,8 +18,18 @@ import java.util.ArrayList;
 
 public class WordNetWordDAO implements WordDAO {
   private Dictionary dictionary = null;
+  private static final String WORDNET_INSTALLED_MARKER = "wordnet_installed";
 
   public WordNetWordDAO(Context context) {
+    if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+        WORDNET_INSTALLED_MARKER, true)) {
+      Log.d(getClass().getCanonicalName(), "WordNet is missing: installing WordNet files...");
+      // It seems we have to copy WordNet files from assets dir to local app dir to use them with
+      // File API.
+      AssetsInitializationHelper.copyAsset(context, "wordnet", context.getFilesDir().toString());
+      PreferenceManager.getDefaultSharedPreferences(context).
+          edit().putBoolean(WORDNET_INSTALLED_MARKER, false).commit();
+    }
     try {
       dictionary = Dictionary.getFileBackedInstance(context.getFilesDir().toString() + "/wordnet");
     } catch (JWNLException e) {

@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.english.englishwords.app.dao.WordStatsDAO;
+import com.english.englishwords.app.dao.FileWordListsDAO;
+import com.english.englishwords.app.dao.SQLLiteHelper;
+import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
 import com.english.englishwords.app.data_model.LearningManager;
 import com.english.englishwords.app.data_model.WordStats;
 
@@ -27,7 +29,10 @@ public class LessonEnding extends Activity {
     setContentView(R.layout.activity_lesson_ending);
 
     // TODO(bogdan) set stats
-    LearningManager.initialize(getApplicationContext());
+    // NOTE(krasikov): if we need to initialize LearningManager here - we need inititilize it in
+    // the same way in InitialTest. But this is surprising that we need to do this for each Activity
+    // (double check if it is really needed).
+    LearningManager.initialize(new SQLLiteWordStatsDAO(new SQLLiteHelper(getApplicationContext())), new FileWordListsDAO(getApplicationContext()));
     LearningManager learningManager = LearningManager.getInstance();
 
     Log.v(
@@ -48,7 +53,7 @@ public class LessonEnding extends Activity {
     String hardest_word = "";
     for (String word : wordsInLesson) {
       Log.d(this.getClass().getCanonicalName(), "The word processed in the exercise is " + word);
-      WordStats stats = learningManager.getWordStats(word);
+      WordStats stats = learningManager.getStats(word);
       int score = 0;
       for (Pair<Date, Boolean> result : stats.history) {
         if (result.second) {

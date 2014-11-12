@@ -3,7 +3,8 @@ package com.english.englishwords.app.data_model;
 import android.content.Context;
 import android.util.Log;
 
-import com.english.englishwords.app.InitializationHelper;
+import com.english.englishwords.app.dao.FileWordListsDAO;
+import com.english.englishwords.app.dao.WordListsDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
 
 import java.io.BufferedReader;
@@ -11,77 +12,83 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
-// TODO(krasikov): This class is singleton - but it will be converted to a regular one soon.
-public class LearningManager {
+public class LearningManager implements WordStatsRepository {
   private static LearningManager instance = null;
-
-  // Used to save learned words to a disk.
-  Context context;
 
   // Words that weren't yet learned or weren't even show to the user.
   private PriorityQueue<String> wordsInProgress;
 
   // Words that considered to be learned.
-  private List<String> learnedWords;
-
-  private WordStatsDAO wordStatsDAO;
-  // In-memory copy of all WordsStats stored by WordStatsDAO. It is used to rank words by learning
-  // priority.
-  private Dictionary<String, WordStats> wordsStats;
+  private Set<String> learnedWords;
 
   private List<String> originalWordList;
 
+  // In-memory copy of all WordsStats stored by WordStatsDAO. It is used to rank words by learning
+  // priority.
+  private Hashtable<String, WordStats> wordsStats;
+
+  private WordListsDAO wordListsDAO;
+
+  private WordStatsDAO wordStatsDAO;
+  private Hashtable<String, Integer> originalWordListToPos;
+
   // Inits the word queue from res/original_word_order.txt or from previous application runs.
-  public static void initialize(Context context) {
+  public static void initialize(WordStatsDAO wordStatsDAO, FileWordListsDAO wordListsDAO) {
     if (instance == null) {
-      instance = new LearningManager(context);
+      instance = new LearningManager(wordListsDAO, wordStatsDAO);
     }
   }
 
+  // TODO(krasikov): this class probably should be converted to a non-singleton class.
   public static LearningManager getInstance() {
     return instance;
   }
 
-  private LearningManager(Context _context) {
-    context = _context;
+  private LearningManager(WordListsDAO wordListsDAO, WordStatsDAO wordStatsDAO) {
+    this.wordStatsDAO = wordStatsDAO;
+    this.wordListsDAO = wordListsDAO;
+
     initializeWordStats();
     initializeOriginalWordList();
     initializeLearnedWords();
     initializeWordsInProgress();
   }
 
+  private void initializeWordStats() {
+    wordsStats = new Hashtable<String, WordStats>();
+    for (WordStats stats : this.wordStatsDAO.getStatsForAllWords()) {
+      wordsStats.put(stats.word, stats);
+    }
+  }
+
   private void initializeOriginalWordList() {
     try {
-      originalWordList = readWordListFromInput(context.getAssets().open("original_word_order.txt"));
+      originalWordList = readWordListFromInput(wordListsDAO.getOriginalWordOrderStream());
+      originalWordListToPos = new Hashtable<String, Integer>(originalWordList.size());
+      for (int i = 0; i < originalWordList.size(); i++) {
+        originalWordListToPos.put(originalWordList.get(i), i);
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  private void initializeWordStats() {
-    wordStatsDAO = new WordStatsDAO(context);
-    wordsStats = new Hashtable<String, WordStats>();
-    for (WordStats stats : wordStatsDAO.getStatsForAllWords()) {
-      wordsStats.put(stats.word, stats);
-    }
-  }
-
   private void initializeLearnedWords() {
     try {
-      learnedWords = readWordListFromInput(context.openFileInput("learnedWords.txt"));
-    } catch (FileNotFoundException e) {
-      // TODO(krasikov): Do we need this? move this to another place.
-      InitializationHelper.copyAsset(context, "wordnet", context.getFilesDir().toString());
-      learnedWords = new ArrayList<String>();
+      learnedWords = new HashSet<String>(
+          readWordListFromInput(wordListsDAO.getLearnedWordsStream()));
+    } catch (FileNotFoundException e) { // TODO(krasikov): don't rely on FileNotFoundException.
+      // Probably first application run - create empty learnedWords.txt.
+      Log.d(this.getClass().getCanonicalName(), "learnedWords.txt is missing");
+      learnedWords = new HashSet<String>();
+      wordListsDAO.saveLearnedWords(learnedWords);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -89,7 +96,7 @@ public class LearningManager {
 
   private void initializeWordsInProgress() {
     wordsInProgress =
-        new PriorityQueue<String>(originalWordList.size(), new WordPriorityComparator());
+        new PriorityQueue<String>(originalWordList.size(), new WordPriorityComparator(this));
     for (String word : originalWordList) {
       if (!learnedWords.contains(word)) {
         wordsInProgress.add(word);
@@ -98,16 +105,21 @@ public class LearningManager {
   }
 
   private static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
-    ArrayList<String> wordlist = new ArrayList<String>();
+    ArrayList<String> wordList = new ArrayList<String>();
     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
     String word;
 
     while ((word = reader.readLine()) != null) {
-      wordlist.add(word.trim());
+      wordList.add(word.trim());
     }
 
     input.close();
-    return wordlist;
+    return wordList;
+  }
+
+  // TODO(krasikov): move this to WordListDAO maybe.
+  public int getPositionInOriginalWordList(String word) {
+    return originalWordListToPos.get(word);
   }
 
   public String popWord() { return wordsInProgress.poll(); }
@@ -120,51 +132,39 @@ public class LearningManager {
     return wordsInProgress.toArray(new String[0]);
   }
 
-  public WordStatsDAO getWordStatsDAO() {
-    return wordStatsDAO;
-  }
-
-  public WordStats getWordStats(String word) {
-    return wordsStats.get(word);
+  @Override
+  public WordStats getStats(String word) {
+    WordStats wordStats = wordsStats.get(word);
+    if (wordStats == null) {
+      wordStats = new WordStats(word);
+    }
+    return wordStats;
   }
 
   public int getLearnedWordsNum() {
     return learnedWords.size();
   }
 
-  public void pretendUserLearnedNFirstWords(int learnedWordsNum) {
+  public void pretendUserLearnedFirstNWords(int learnedWordsNum) {
     Log.e(getClass().getCanonicalName(), "setting " + Integer.toString(learnedWordsNum));
     Log.e(getClass().getCanonicalName(), "learned words " + Integer.toString(learnedWords.size()));
 
-    learnedWords = originalWordList.subList(0, learnedWordsNum);
-    saveLearnedWords();
+    learnedWords = new HashSet<String>(originalWordList.subList(0, learnedWordsNum));
+    wordListsDAO.saveLearnedWords(learnedWords);
     for (String learnedWord : learnedWords) {
       wordsInProgress.remove(learnedWord);
     }
   }
 
-  private void saveLearnedWords() {
-    try {
-      OutputStreamWriter output =
-          new OutputStreamWriter(context.openFileOutput("learnedWords.txt", Context.MODE_PRIVATE));
-      for(String learnedWord : learnedWords) {
-        output.write(learnedWord + "\n");
-      }
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public int accomplishedExercisesNum() {
-    int exercisesNum = 0;
-    Enumeration<WordStats> elements = wordsStats.elements();
-    while (elements.hasMoreElements()) {
-      exercisesNum += elements.nextElement().history.size();
-    }
-    return exercisesNum;
-  }
+// NOTE(krasikov): keep it here - most likely we will use it.
+//  public int accomplishedExercisesNum() {
+//    int exercisesNum = 0;
+//    Enumeration<WordStats> elements = wordsStats.elements();
+//    while (elements.hasMoreElements()) {
+//      exercisesNum += elements.nextElement().history.size();
+//    }
+//    return exercisesNum;
+//  }
 
   public void memorizeExerciseResult(String word, boolean success) {
     WordStats wordStats = wordStatsDAO.getStats(word);
@@ -172,16 +172,4 @@ public class LearningManager {
     wordStatsDAO.update(wordStats);
   }
 
-  private static class WordPriorityComparator implements Comparator<String> {
-    @Override
-    public int compare(String x, String y) {
-      if (x.length() < y.length()) {
-        return -1;
-      }
-      if (x.length() > y.length()) {
-        return 1;
-      }
-      return 0;
-    }
-  }
 }

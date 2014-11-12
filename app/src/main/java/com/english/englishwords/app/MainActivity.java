@@ -16,7 +16,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.english.englishwords.app.dao.FileWordListsDAO;
+import com.english.englishwords.app.dao.SQLLiteHelper;
 import com.english.englishwords.app.dao.WordNetWordDAO;
+import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.LearningManager;
 import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
@@ -27,17 +30,20 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
   private NavigationDrawerFragment attachedFragment;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    Log.d(getClass().getCanonicalName(), "in MainActivity#onCreate");
+
     // Initialize singleton for word queue from original_word_order.txt or from local storage
     // (if application was in use before).
     if (LearningManager.getInstance() == null) {
-      LearningManager.initialize(getApplicationContext());
+      LearningManager.initialize(
+          new SQLLiteWordStatsDAO(new SQLLiteHelper(getApplicationContext())),
+          new FileWordListsDAO(getApplicationContext()));
     }
 
     setContentView(R.layout.activity_main);
@@ -49,8 +55,11 @@ public class MainActivity extends Activity
     attachedFragment.setUp(
         R.id.navigation_drawer,
         (DrawerLayout) findViewById(R.id.drawer_layout));
-    if (LearningManager.getInstance().accomplishedExercisesNum() == 0) {
-      Intent intent = new Intent(this.getApplicationContext(), InitialTest.class);
+
+    if (InitialTest.isInitialTestNeeded(getApplicationContext())) {
+      // TODO(krasikov): MainActivity is still in the activities stack so if you go back it will
+      // be shown - fix this. Probably InitialTest should be default activity, not sure.
+      Intent intent = new Intent(getApplicationContext(), InitialTest.class);
       startActivity(intent);
       return;
     }
@@ -58,19 +67,20 @@ public class MainActivity extends Activity
 
   @Override
   public void onNavigationDrawerItemSelected(int position) {
-    // update the main content by replacing fragments
+    // Update the main content by replacing fragments.
     FragmentManager fragmentManager = getFragmentManager();
     fragmentManager.beginTransaction().replace(
         R.id.container, LearningFragment.newInstance(position + 1)).commit();
   }
 
   public static class LearningFragment extends Fragment {
-    private static final String ARG_SECTION_NUMBER = "section_number";
     public static final String WORDS_IN_LESSON = "words_in_lesson";
+
+    private static final String ARG_SECTION_NUMBER = "section_number";
     private static final int lessonSize = 6;
     private static int exercisesPassedInCurrentSession = 0;
-    // updates to this arraylist will update the list view on the screen that is
-    // responsible for displaying possible choices
+    // Updates to this ArrayList will update the list view on the screen that is
+    // responsible for displaying possible choices.
     private final ArrayList<String> options = new ArrayList<String>();
     private ExerciseManager exerciseManager;
     private Exercise exercise = null;
@@ -93,8 +103,11 @@ public class MainActivity extends Activity
     @Override
     public void onAttach(Activity activity) {
       super.onAttach(activity);
-      this.exerciseManager = new DefinitionExerciseManager(new WordNetWordDAO(
-          activity.getApplicationContext()), LearningManager.getInstance());
+
+      Log.d(getClass().getCanonicalName(), "in LearningFragment#onAttach");
+
+      this.exerciseManager = new DefinitionExerciseManager(
+          new WordNetWordDAO(activity.getApplicationContext()), LearningManager.getInstance());
 
       createNextExercise();
     }
@@ -105,7 +118,7 @@ public class MainActivity extends Activity
         createNextExercise();
         updateView(rootView);
       } else {
-        // change the fragment to display the error screen
+        // Change the fragment to display the error screen.
         Intent intent = new Intent(rootView.getContext(), ErrorActivity.class);
         // TODO(Bogdan) move strings to the strings.xml
         intent.putExtra("correct answer", exercise.getLearningWord());
@@ -114,7 +127,6 @@ public class MainActivity extends Activity
       }
     }
 
-    //TODO(krasikov): move this method to MemorizationDecider.
     private void createNextExercise() {
       String word = LearningManager.getInstance().popWord();
       if (word == null) {

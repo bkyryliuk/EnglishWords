@@ -10,15 +10,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class InitializationHelper {
+public class AssetsInitializationHelper {
   /**
    * Copy the asset at the specified currentFolderOrFile to this app's data directory. If the
-   * asset is a directory, its contents are also copied.
+   * asset is a directory, its contents are also copied. This is needed to access assets as regular
+   * files through File API.
    *
    * @param currentFolderOrFile Path to asset, relative to app's assets directory.
    * @param outDir
    */
   public static void copyAsset(Context context, String currentFolderOrFile, String outDir) {
+    Log.d(AssetsInitializationHelper.class.getCanonicalName(),
+        "Copying wordnet files to " + outDir + "directory." );
     AssetManager manager = context.getAssets();
 
     // If we have a directory, we make it and recurse. If a file, we copy its
