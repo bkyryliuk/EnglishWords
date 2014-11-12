@@ -8,6 +8,10 @@ import java.util.Comparator;
 import java.util.Date;
 
 public class WordPriorityComparator implements Comparator<String> {
+  public final long ONE_MINUTE = 60000000; // in milliseconds.
+  public final long ONE_HOUR = 60 * ONE_MINUTE;
+  public final long ONE_DAY = 24 * ONE_HOUR;
+
   private LearningManager learningManager;
 
   public WordPriorityComparator(LearningManager learningManager) {
@@ -15,7 +19,6 @@ public class WordPriorityComparator implements Comparator<String> {
   }
 
   private long whenToLearn(WordStats wordStats) {
-    long oneMinute = 60000000; // in milliseconds.
     long rightNow = new Date().getTime();
 
     // New word.
@@ -27,14 +30,14 @@ public class WordPriorityComparator implements Comparator<String> {
     // Only one successful test in word stats.
     Pair<Date, Boolean> lastRepetition = wordStats.history.get(wordStats.history.size() - 1);
     if (wordStats.history.size() == 1 && lastRepetition.second) {
-      return lastRepetition.first.getTime() + 24 * 60 * oneMinute;
+      return lastRepetition.first.getTime() + 24 * 60 * ONE_MINUTE;
     }
 
     // The last test was unsuccessful.
     if (!lastRepetition.second) {
       // Try to test word again regardless of its level to ensure users didn't forget it
       // completely.
-      return lastRepetition.first.getTime() + 4 * oneMinute;
+      return lastRepetition.first.getTime() + 4 * ONE_MINUTE;
     }
 
     // We have more than 2 tests for this word and last test was successful.

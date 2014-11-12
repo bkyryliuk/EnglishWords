@@ -18,6 +18,11 @@ public class WordStats {
     history.add(new Pair<Date, Boolean>(new Date(), success));
   }
 
+  public void copyFrom(WordStats wordStats) {
+    word = wordStats.word;
+    history = wordStats.history;
+  }
+
 //  public ArrayList<Date> getDates() {
 //    ArrayList<Date> dates = new ArrayList<Date>();
 //    for (Pair<Date, Boolean> entry : history) {

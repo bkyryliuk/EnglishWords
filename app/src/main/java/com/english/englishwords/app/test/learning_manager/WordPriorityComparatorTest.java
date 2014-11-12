@@ -1,35 +1,38 @@
 package com.english.englishwords.app.test.learning_manager;
 
 import android.test.InstrumentationTestCase;
+import android.util.Pair;
 
-import com.english.englishwords.app.dao.FileWordListsDAO;
-import com.english.englishwords.app.dao.SQLLiteHelper;
-import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
+import com.english.englishwords.app.data_model.WordStats;
+import com.english.englishwords.app.learning_manager.LearningManager;
+import com.english.englishwords.app.learning_manager.WordPriorityComparator;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 public class WordPriorityComparatorTest extends InstrumentationTestCase {
 
-//  private WordPriorityComparator wordPriorityComparator;
-//  private LearningManager learningManager;
+  final Date rightNow = new Date();
 
-  public WordPriorityComparatorTest() {
-//    LearningManager.initialize(new SQLLiteWordStatsDAO(new SQLLiteHelper(this.getInstrumentation().getContext())), new FileWordListsDAO(this.getInstrumentation().getContext()));
-//    learningManager = LearningManager.getInstance();
-  }
-
-  protected void setUp() {
-//    ArrayList<String> wordOrder = new ArrayList<String>();
-//    wordOrder.add('word1');
-//    wordOrder.add('word2');
-//    wordPriorityComparator = new WordPriorityComparator(wordOrder);
+  private WordPriorityComparator getComparator(WordStats[] stats, String[] wordOrder) {
+    LearningManager.initialize(
+        new DummyWordStatsDAO(Arrays.asList(stats)),
+        new DummyWordListsDAO(Arrays.asList(wordOrder)));
+    return new WordPriorityComparator(LearningManager.getInstance());
   }
 
   public void testGetWordMemorizationDelay() throws Exception {
-    assertTrue(true);
+    WordStats stat1 = new WordStats("word1");
+    stat1.history.add(new Pair<Date, Boolean>(rightNow, true));
+    WordStats stat2 = new WordStats("word2");
+    WordPriorityComparator wordPriorityComparator = getComparator(
+        new WordStats[]{stat1, stat2}, new String[] {"word1", "word2"});
+
+    assertEquals(wordPriorityComparator.compare("word1", "word2"), -1);
   }
 
   public void testGetWordMemorizationDelay2() throws Exception {
     assertTrue(true);
   }
+
 }
