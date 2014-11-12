@@ -3,7 +3,6 @@ package com.english.englishwords.app.learning_manager;
 import android.util.Pair;
 
 import com.english.englishwords.app.data_model.WordStats;
-import com.english.englishwords.app.learning_manager.LearningManager;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -72,7 +71,10 @@ public class WordPriorityComparator implements Comparator<String> {
     long when2 = whenToLearn(wordStats2);
     if (when1 == when2) {
       // Compare priority according to the original list.
-      return learningManager.getPositionInOriginalWordList(word1) < learningManager.getPositionInOriginalWordList(word2) ? -1 : 1;
+      return
+          learningManager.getPositionInUsageFrequencyList(word1) <
+              learningManager.getPositionInUsageFrequencyList(word2)
+          ? -1 : 1;
     }
     return when1 < when2 ? -1 : 1;
   }

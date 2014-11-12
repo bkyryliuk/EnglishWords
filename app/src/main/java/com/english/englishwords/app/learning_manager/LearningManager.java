@@ -2,22 +2,13 @@ package com.english.englishwords.app.learning_manager;
 
 import android.util.Log;
 
-import com.english.englishwords.app.dao.FileWordListsDAO;
 import com.english.englishwords.app.dao.WordListsDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.WordStats;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 
 public class LearningManager {
   private static LearningManager instance = null;
@@ -25,17 +16,13 @@ public class LearningManager {
   // Words that weren't yet learned or weren't even show to the user.
   private PriorityQueue<String> wordsInProgress;
 
-  // Words that considered to be learned.
-  private Set<String> learnedWords;
-
-  private List<String> originalWordList;
+  private List<String> wordOrderByUsage;
 
   private WordListsDAO wordListsDAO;
 
   private WordStatsDAO wordStatsDAO;
-  private Hashtable<String, Integer> originalWordListToPos;
 
-  // Inits the word queue from res/original_word_order.txt or from previous application runs.
+  // Inits the word queue from res/words_sorted_by_usage.txt or from previous application runs.
   public static void initialize(WordStatsDAO wordStatsDAO, WordListsDAO wordListsDAO) {
     if (instance == null) {
       instance = new LearningManager(wordListsDAO, wordStatsDAO);
@@ -51,69 +38,22 @@ public class LearningManager {
     this.wordStatsDAO = wordStatsDAO;
     this.wordListsDAO = wordListsDAO;
 
-    initializeOriginalWordList();
-    initializeLearnedWords();
-    initializeWordsInProgress();
-  }
-
-
-  private void initializeOriginalWordList() {
-    try {
-      originalWordList = readWordListFromInput(wordListsDAO.getOriginalWordOrderStream());
-      originalWordListToPos = new Hashtable<String, Integer>(originalWordList.size());
-      for (int i = 0; i < originalWordList.size(); i++) {
-        originalWordListToPos.put(originalWordList.get(i), i);
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void initializeLearnedWords() {
-    try {
-      learnedWords = new HashSet<String>(
-          readWordListFromInput(wordListsDAO.getLearnedWordsStream()));
-    } catch (FileNotFoundException e) { // TODO(krasikov): don't rely on FileNotFoundException.
-      // Probably first application run - create empty learnedWords.txt.
-      Log.d(this.getClass().getCanonicalName(), "learnedWords.txt is missing");
-      learnedWords = new HashSet<String>();
-      wordListsDAO.saveLearnedWords(learnedWords);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void initializeWordsInProgress() {
+    wordOrderByUsage = wordListsDAO.getWordOrderByUsage();
     wordsInProgress =
-        new PriorityQueue<String>(originalWordList.size(), new WordPriorityComparator(this));
-    for (String word : originalWordList) {
-      if (!learnedWords.contains(word)) {
+        new PriorityQueue<String>(wordOrderByUsage.size(), new WordPriorityComparator(this));
+    for (String word : wordOrderByUsage) {
+      if (!wordListsDAO.getLearnedWords().contains(word)) {
         wordsInProgress.add(word);
       }
     }
   }
 
-  private static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
-    ArrayList<String> wordList = new ArrayList<String>();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-    String word;
-
-    while ((word = reader.readLine()) != null) {
-      wordList.add(word.trim());
-    }
-
-    input.close();
-    return wordList;
-  }
-
-  // TODO(krasikov): maybe get rid of this method.
   public WordStats getStats(String word) {
     return wordStatsDAO.getStats(word);
   }
 
-  // TODO(krasikov): move this to WordListDAO maybe.
-  public int getPositionInOriginalWordList(String word) {
-    return originalWordListToPos.get(word);
+  public int getPositionInUsageFrequencyList(String word) {
+    return wordListsDAO.getPositionInOriginalWordList(word);
   }
 
   public String popWord() { return wordsInProgress.poll(); }
@@ -127,16 +67,16 @@ public class LearningManager {
   }
 
   public int getLearnedWordsNum() {
-    return learnedWords.size();
+    return wordListsDAO.getLearnedWords().size();
   }
 
   public void pretendUserLearnedFirstNWords(int learnedWordsNum) {
-    Log.e(getClass().getCanonicalName(), "setting " + Integer.toString(learnedWordsNum));
-    Log.e(getClass().getCanonicalName(), "learned words " + Integer.toString(learnedWords.size()));
+    Log.e(getClass().getCanonicalName(),
+        "setting learned words to " + Integer.toString(learnedWordsNum));
 
-    learnedWords = new HashSet<String>(originalWordList.subList(0, learnedWordsNum));
-    wordListsDAO.saveLearnedWords(learnedWords);
-    for (String learnedWord : learnedWords) {
+    wordListsDAO.saveLearnedWords(
+        new HashSet<String>(wordOrderByUsage.subList(0, learnedWordsNum)));
+    for (String learnedWord : wordListsDAO.getLearnedWords()) {
       wordsInProgress.remove(learnedWord);
     }
   }

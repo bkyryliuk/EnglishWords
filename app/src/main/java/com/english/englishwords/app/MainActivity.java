@@ -38,7 +38,7 @@ public class MainActivity extends Activity
 
     Log.d(getClass().getCanonicalName(), "in MainActivity#onCreate");
 
-    // Initialize singleton for word queue from original_word_order.txt or from local storage
+    // Initialize singleton for word queue from words_sorted_by_usage.txt or from local storage
     // (if application was in use before).
     if (LearningManager.getInstance() == null) {
       LearningManager.initialize(
