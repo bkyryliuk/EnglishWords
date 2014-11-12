@@ -21,7 +21,7 @@ import com.english.englishwords.app.dao.SQLLiteHelper;
 import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
 import com.english.englishwords.app.data_model.Exercise;
-import com.english.englishwords.app.data_model.LearningManager;
+import com.english.englishwords.app.learning_manager.LearningManager;
 import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
 import com.english.englishwords.app.excercise_providers.ExerciseManager;
 

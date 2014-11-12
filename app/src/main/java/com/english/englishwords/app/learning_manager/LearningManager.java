@@ -1,11 +1,11 @@
-package com.english.englishwords.app.data_model;
+package com.english.englishwords.app.learning_manager;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.english.englishwords.app.dao.FileWordListsDAO;
 import com.english.englishwords.app.dao.WordListsDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
+import com.english.englishwords.app.data_model.WordStats;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

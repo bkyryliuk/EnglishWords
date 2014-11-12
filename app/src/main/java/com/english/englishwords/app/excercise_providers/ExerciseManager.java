@@ -2,9 +2,8 @@ package com.english.englishwords.app.excercise_providers;
 
 import android.util.Log;
 
-import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.data_model.Exercise;
-import com.english.englishwords.app.data_model.LearningManager;
+import com.english.englishwords.app.learning_manager.LearningManager;
 import com.english.englishwords.app.data_model.Word;
 
 import java.util.Random;

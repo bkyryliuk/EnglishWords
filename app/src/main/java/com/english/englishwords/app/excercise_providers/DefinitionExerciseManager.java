@@ -6,7 +6,7 @@ import com.english.englishwords.app.algo.WordSelector;
 import com.english.englishwords.app.dao.WordDAO;
 import com.english.englishwords.app.data_model.Exercise;
 import com.english.englishwords.app.data_model.Word;
-import com.english.englishwords.app.data_model.LearningManager;
+import com.english.englishwords.app.learning_manager.LearningManager;
 
 import java.util.ArrayList;
 import java.util.List;

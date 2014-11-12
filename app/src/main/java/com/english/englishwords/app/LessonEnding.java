@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.english.englishwords.app.dao.FileWordListsDAO;
 import com.english.englishwords.app.dao.SQLLiteHelper;
 import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
-import com.english.englishwords.app.data_model.LearningManager;
+import com.english.englishwords.app.learning_manager.LearningManager;
 import com.english.englishwords.app.data_model.WordStats;
 
 import java.util.ArrayList;

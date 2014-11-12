@@ -1,10 +1,12 @@
-package com.english.englishwords.app.data_model;
+package com.english.englishwords.app.learning_manager;
 
 import android.util.Pair;
 
+import com.english.englishwords.app.data_model.WordStats;
+import com.english.englishwords.app.learning_manager.LearningManager;
+
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 public class WordPriorityComparator implements Comparator<String> {
   private LearningManager learningManager;

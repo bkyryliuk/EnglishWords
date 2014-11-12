@@ -1,6 +1,6 @@
 package com.english.englishwords.app.dao;
 
-import com.english.englishwords.app.data_model.LearningManager;
+import com.english.englishwords.app.learning_manager.LearningManager;
 import com.english.englishwords.app.data_model.Word;
 import com.english.englishwords.app.data_model.WordSense;
 
