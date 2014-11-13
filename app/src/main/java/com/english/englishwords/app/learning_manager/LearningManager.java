@@ -16,29 +16,15 @@ public class LearningManager {
   // Words that weren't yet learned or weren't even show to the user.
   private PriorityQueue<String> wordsInProgress;
 
-  private List<String> wordOrderByUsage;
-
   private WordListsDAO wordListsDAO;
 
   private WordStatsDAO wordStatsDAO;
-
-  // Inits the word queue from res/words_sorted_by_usage.txt or from previous application runs.
-  public static void initialize(WordStatsDAO wordStatsDAO, WordListsDAO wordListsDAO) {
-    if (instance == null) {
-      instance = new LearningManager(wordListsDAO, wordStatsDAO);
-    }
-  }
-
-  // TODO(krasikov): this class probably should be converted to a non-singleton class.
-  public static LearningManager getInstance() {
-    return instance;
-  }
 
   private LearningManager(WordListsDAO wordListsDAO, WordStatsDAO wordStatsDAO) {
     this.wordStatsDAO = wordStatsDAO;
     this.wordListsDAO = wordListsDAO;
 
-    wordOrderByUsage = wordListsDAO.getWordOrderByUsage();
+    List<String> wordOrderByUsage = wordListsDAO.getWordOrderByUsage();
     wordsInProgress = new PriorityQueue<String>(
         wordOrderByUsage.size(), new WordPriorityComparator(wordListsDAO, wordStatsDAO));
     for (String word : wordOrderByUsage) {
@@ -48,9 +34,33 @@ public class LearningManager {
     }
   }
 
-  public String popWord() { return wordsInProgress.poll(); }
+  // Inits the word queue from res/words_sorted_by_usage.txt or from previous application runs.
+  public static void initialize(WordStatsDAO wordStatsDAO, WordListsDAO wordListsDAO) {
+    if (instance == null) {
+      instance = new LearningManager(wordListsDAO, wordStatsDAO);
+    }
+  }
 
-  public void addWord(String word) { wordsInProgress.add(word); }
+  // TODO(krasikov): can we convert this class to a non-singleton?
+  public static LearningManager getInstance() {
+    return instance;
+  }
+
+  public WordListsDAO getWordListsDAO() {
+    return wordListsDAO;
+  }
+
+  public WordStatsDAO getWordStatsDAO() {
+    return wordStatsDAO;
+  }
+
+  public String popWord() {
+    return wordsInProgress.poll();
+  }
+
+  public void addWord(String word) {
+    wordsInProgress.add(word);
+  }
 
   public String[] getWordsInProgress() {
     // TODO(krasikov): maybe rewrite this to be real words in progress i.e. remove words which
@@ -67,7 +77,7 @@ public class LearningManager {
         "setting learned words to " + Integer.toString(learnedWordsNum));
 
     wordListsDAO.saveLearnedWords(
-        new HashSet<String>(wordOrderByUsage.subList(0, learnedWordsNum)));
+        new HashSet<String>(wordListsDAO.getWordOrderByUsage().subList(0, learnedWordsNum)));
     for (String learnedWord : wordListsDAO.getLearnedWords()) {
       wordsInProgress.remove(learnedWord);
     }

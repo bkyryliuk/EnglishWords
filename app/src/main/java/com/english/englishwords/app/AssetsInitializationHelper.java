@@ -21,7 +21,7 @@ public class AssetsInitializationHelper {
    */
   public static void copyAsset(Context context, String currentFolderOrFile, String outDir) {
     Log.d(AssetsInitializationHelper.class.getCanonicalName(),
-        "Copying wordnet files to " + outDir + "directory." );
+        "Copying wordnet files to " + outDir + "directory.");
     AssetManager manager = context.getAssets();
 
     // If we have a directory, we make it and recurse. If a file, we copy its

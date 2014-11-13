@@ -11,12 +11,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.english.englishwords.app.dao.FileWordListsDAO;
-import com.english.englishwords.app.dao.SQLLiteHelper;
-import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
 import com.english.englishwords.app.dao.WordListsDAO;
 import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.WordStats;
+import com.english.englishwords.app.learning_manager.LearningManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,18 +29,17 @@ public class LessonEnding extends Activity {
 
     // TODO(bogdan) set stats
 
-    // TODO(krasikov): probably get this instances from global repository.
-    WordStatsDAO sqlLiteWordStatsDAO =
-        new SQLLiteWordStatsDAO(new SQLLiteHelper(getApplicationContext()));
-    WordListsDAO fileWordListsDAO = new FileWordListsDAO(getApplicationContext());
+    // NOTE(krasikov): at this point LearningManager should be initialized by MainActivity.
+    WordStatsDAO wordStatsDAO = LearningManager.getInstance().getWordStatsDAO();
+    WordListsDAO wordListsDAO = LearningManager.getInstance().getWordListsDAO();
 
     Log.v(
         this.getClass().getCanonicalName(),
-        "Current position is " + Integer.toString(fileWordListsDAO.getLearnedWords().size()));
+        "Current position is " + Integer.toString(wordListsDAO.getLearnedWords().size()));
 
     TextView word_position_text_view =
         (TextView) findViewById(R.id.activity_lesson_ending_position_number);
-    word_position_text_view.setText(Integer.toString(fileWordListsDAO.getLearnedWords().size()));
+    word_position_text_view.setText(Integer.toString(wordListsDAO.getLearnedWords().size()));
 
     Bundle bundle = getIntent().getExtras();
     ArrayList<String> wordsInLesson = (ArrayList<String>) bundle.getSerializable(
@@ -54,7 +51,7 @@ public class LessonEnding extends Activity {
     String hardest_word = "";
     for (String word : wordsInLesson) {
       Log.d(this.getClass().getCanonicalName(), "The word processed in the exercise is " + word);
-      WordStats stats = sqlLiteWordStatsDAO.getStats(word);
+      WordStats stats = wordStatsDAO.getStats(word);
       int score = 0;
       for (Pair<Date, Boolean> result : stats.history) {
         if (result.second) {

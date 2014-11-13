@@ -69,7 +69,7 @@ public class FileWordListsDAO implements WordListsDAO {
     try {
       OutputStreamWriter output =
           new OutputStreamWriter(context.openFileOutput("learnedWords.txt", Context.MODE_PRIVATE));
-      for(String learnedWord : learnedWords) {
+      for (String learnedWord : learnedWords) {
         output.write(learnedWord + "\n");
       }
     } catch (FileNotFoundException e) {

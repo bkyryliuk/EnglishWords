@@ -17,13 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.english.englishwords.app.dao.FileWordListsDAO;
-import com.english.englishwords.app.dao.SQLLiteHelper;
-import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.dao.SQLLiteWordStatsDAO;
+import com.english.englishwords.app.dao.WordNetWordDAO;
 import com.english.englishwords.app.data_model.Exercise;
-import com.english.englishwords.app.learning_manager.LearningManager;
 import com.english.englishwords.app.excercise_providers.DefinitionExerciseManager;
 import com.english.englishwords.app.excercise_providers.ExerciseManager;
+import com.english.englishwords.app.learning_manager.LearningManager;
 
 import java.util.ArrayList;
 
@@ -38,13 +37,10 @@ public class MainActivity extends Activity
 
     Log.d(getClass().getCanonicalName(), "in MainActivity#onCreate");
 
-    // Initialize singleton for word queue from words_sorted_by_usage.txt or from local storage
-    // (if application was in use before).
-    if (LearningManager.getInstance() == null) {
-      LearningManager.initialize(
-          new SQLLiteWordStatsDAO(new SQLLiteHelper(getApplicationContext())),
-          new FileWordListsDAO(getApplicationContext()));
-    }
+    // All subordinate activities later will access LearningManager without initialization.
+    LearningManager.initialize(
+        new SQLLiteWordStatsDAO(getApplicationContext()),
+        new FileWordListsDAO(getApplicationContext()));
 
     setContentView(R.layout.activity_main);
 

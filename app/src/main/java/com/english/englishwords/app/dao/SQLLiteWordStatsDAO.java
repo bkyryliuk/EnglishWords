@@ -1,7 +1,9 @@
 package com.english.englishwords.app.dao;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Pair;
 
@@ -22,8 +24,8 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
 
   private Hashtable<String, WordStats> wordsStats = new Hashtable<String, WordStats>();
 
-  public SQLLiteWordStatsDAO(SQLLiteHelper dbHelper) {
-    this.dbHelper = dbHelper;
+  public SQLLiteWordStatsDAO(Context context) {
+    this.dbHelper = new SQLLiteHelper(context);
 
     for (WordStats stats : this.getStatsForAllWords()) {
       wordsStats.put(stats.word, stats);
@@ -100,5 +102,26 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
       wordStats.history.add(new Pair<Date, Boolean>(new Date(milliseconds), success));
     }
     return wordStats;
+  }
+
+  public static class SQLLiteHelper extends SQLiteOpenHelper {
+
+    private static final String WORDSTATS_TABLE_CREATE =
+        String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT)",
+            WORD_STATS_TABLE_NAME, WORD_COLUMN_NAME,
+            DATES_COLUMN_NAME, SUCCESSES_COLUMN_NAME);
+
+    public SQLLiteHelper(Context context) {
+      super(context, "EnglishLearner", null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+      db.execSQL(WORDSTATS_TABLE_CREATE);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+    }
   }
 }

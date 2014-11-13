@@ -17,8 +17,8 @@ import net.sf.extjwnl.dictionary.Dictionary;
 import java.util.ArrayList;
 
 public class WordNetWordDAO implements WordDAO {
-  private Dictionary dictionary = null;
   private static final String WORDNET_INSTALLED_MARKER = "wordnet_installed";
+  private Dictionary dictionary = null;
 
   public WordNetWordDAO(Context context) {
     if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(

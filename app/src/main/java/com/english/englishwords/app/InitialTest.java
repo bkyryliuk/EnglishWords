@@ -30,6 +30,8 @@ public class InitialTest extends Activity {
     setContentView(R.layout.activity_initial_test);
     Log.d(getClass().getCanonicalName(), "in InitialTest#onCreate");
 
+    // NOTE(krasikov): at this point LearningManager should be initialized by MainActivity.
+
     Button levelSubmitButton = (Button) findViewById(R.id.level_submit_button);
     levelSubmitButton.setOnClickListener(new Button.OnClickListener() {
       public void onClick(View v) {

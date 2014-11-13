@@ -51,8 +51,8 @@ public class WordPriorityComparator implements Comparator<String> {
   // test weight is 0).
   private int getWordMemorizationDelay(WordStats wordStats) {
     double retentionApproximation = 0;
-    double[] coefs = new double[] {5, 3, 1};
-    double[] coefsPartialSums = new double[] {5, 8, 9};
+    double[] coefs = new double[]{5, 3, 1};
+    double[] coefsPartialSums = new double[]{5, 8, 9};
     int history_size = wordStats.history.size();
     for (int i = history_size - 1; i >= Math.max(history_size - 3, 0); i--) {
       Pair<Date, Boolean> wordStat = wordStats.history.get(i);
@@ -63,7 +63,7 @@ public class WordPriorityComparator implements Comparator<String> {
       }
     }
     double normalization = coefsPartialSums[Math.max(history_size - 1, 2)] / 2.5;
-    return (int)(retentionApproximation/normalization);
+    return (int) (retentionApproximation / normalization);
   }
 
   @Override
@@ -80,7 +80,7 @@ public class WordPriorityComparator implements Comparator<String> {
       return
           wordListDAO.getPositionInUsageFrequencyList(word1) <
               wordListDAO.getPositionInUsageFrequencyList(word2)
-          ? -1 : 1;
+              ? -1 : 1;
     }
     return when1 < when2 ? -1 : 1;
   }
