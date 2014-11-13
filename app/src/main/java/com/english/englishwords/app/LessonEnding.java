@@ -53,7 +53,9 @@ public class LessonEnding extends Activity {
       Log.d(this.getClass().getCanonicalName(), "The word processed in the exercise is " + word);
       WordStats stats = wordStatsDAO.getStats(word);
       int score = 0;
-      for (Pair<Date, Boolean> result : stats.history) {
+      // TODO(bogdan): this should be limited by the time from the session start otherwise lifetime
+      // stats are used.
+      for (Pair<Long, Boolean> result : stats.history) {
         if (result.second) {
           score += 2;
         } else {

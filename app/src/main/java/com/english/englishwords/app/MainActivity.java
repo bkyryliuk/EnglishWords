@@ -73,11 +73,13 @@ public class MainActivity extends Activity
     public static final String WORDS_IN_LESSON = "words_in_lesson";
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final int lessonSize = 6;
+    private static final int LESSONS_NUM_PER_SESSION = 6;
+
     private static int exercisesPassedInCurrentSession = 0;
     // Updates to this ArrayList will update the list view on the screen that is
     // responsible for displaying possible choices.
     private final ArrayList<String> options = new ArrayList<String>();
+    private final ArrayList<String> wordsInLesson = new ArrayList<String>();
     private ExerciseManager exerciseManager;
     private Exercise exercise = null;
 
@@ -105,6 +107,9 @@ public class MainActivity extends Activity
       this.exerciseManager = new DefinitionExerciseManager(
           new WordNetWordDAO(activity.getApplicationContext()), LearningManager.getInstance());
 
+      if (exercisesPassedInCurrentSession == 0) {
+        wordsInLesson.clear();
+      }
       createNextExercise();
     }
 
@@ -124,6 +129,13 @@ public class MainActivity extends Activity
     }
 
     private void createNextExercise() {
+      if (exercisesPassedInCurrentSession == LESSONS_NUM_PER_SESSION) {
+        exercisesPassedInCurrentSession = 0;
+        // TODO(bogdank) end the lesson and show the stats
+        Intent intent = new Intent(this.getActivity().getApplicationContext(), LessonEnding.class);
+        intent.putExtra(WORDS_IN_LESSON, wordsInLesson);
+        startActivity(intent);
+      }
       String word = LearningManager.getInstance().popWord();
       if (word == null) {
         // TODO(Bogdan) add the congrats activity.
@@ -132,14 +144,8 @@ public class MainActivity extends Activity
       }
       System.out.println("learning: " + word);
 
-      if (exercisesPassedInCurrentSession == lessonSize) {
-        exercisesPassedInCurrentSession = 0;
-        // TODO(bogdank) end the lesson and show the stats
-        Intent intent = new Intent(this.getActivity().getApplicationContext(), LessonEnding.class);
-        startActivity(intent);
-      } else {
-        exercise = exerciseManager.generateExerciseForWord(word);
-      }
+      wordsInLesson.add(word);
+      exercise = exerciseManager.generateExerciseForWord(word);
     }
 
     public void updateView(View view) {

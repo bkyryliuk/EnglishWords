@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class WordPriorityComparatorTest extends InstrumentationTestCase {
-  final Date rightNow = new Date();
+  final Long rightNow = new Date().getTime();
 
   private WordPriorityComparator getComparator(WordStats[] stats, String[] wordOrder) {
     return new WordPriorityComparator(
@@ -20,7 +20,7 @@ public class WordPriorityComparatorTest extends InstrumentationTestCase {
 
   public void testGetWordMemorizationDelay() throws Exception {
     WordStats stat1 = new WordStats("word1");
-    stat1.history.add(new Pair<Date, Boolean>(rightNow, true));
+    stat1.addEntry(rightNow - WordPriorityComparator.HOUR, true);
     WordStats stat2 = new WordStats("word2");
     WordPriorityComparator wordPriorityComparator = getComparator(
         new WordStats[]{stat1, stat2}, new String[]{"word1", "word2"});

@@ -47,14 +47,14 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
     dbHelper.getWritableDatabase().replace(WORD_STATS_TABLE_NAME, null, values);
   }
 
-  private ContentValues getContentValues(ArrayList<Pair<Date, Boolean>> history) {
+  private ContentValues getContentValues(ArrayList<Pair<Long, Boolean>> history) {
     StringBuilder dates = new StringBuilder();
     StringBuilder successes = new StringBuilder();
-    for (Pair<Date, Boolean> entry : history) {
+    for (Pair<Long, Boolean> entry : history) {
       if (dates.length() > 0) {
         dates.append(DELIMITER);
       }
-      dates.append(entry.first.getTime());
+      dates.append(entry.first);
       successes.append(entry.second ? "1" : "0");
     }
     ContentValues contentValues = new ContentValues();
@@ -99,7 +99,7 @@ public class SQLLiteWordStatsDAO implements WordStatsDAO {
     for (int i = 0; i < dates.length; i++) {
       long milliseconds = Long.parseLong(dates[i]);
       Boolean success = successes.charAt(i) != '0';
-      wordStats.history.add(new Pair<Date, Boolean>(new Date(milliseconds), success));
+      wordStats.addEntry(milliseconds, success);
     }
     return wordStats;
   }

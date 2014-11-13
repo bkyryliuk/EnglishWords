@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 
+// Based on word stats decide in which order to learn words.
+// Owns global instances of WordStatDAO and WordListDAO.
 public class LearningManager {
   private static LearningManager instance = null;
 
@@ -58,10 +60,6 @@ public class LearningManager {
     return wordsInProgress.poll();
   }
 
-  public void addWord(String word) {
-    wordsInProgress.add(word);
-  }
-
   public String[] getWordsInProgress() {
     // TODO(krasikov): maybe rewrite this to be real words in progress i.e. remove words which
     // wasn't yet show.
@@ -97,5 +95,7 @@ public class LearningManager {
     WordStats wordStats = wordStatsDAO.getStats(word);
     wordStats.addEntry(success);
     wordStatsDAO.update(wordStats);
+    // Once wordStats are updated we can add learning words back to insert it in right position.
+    wordsInProgress.add(word);
   }
 }

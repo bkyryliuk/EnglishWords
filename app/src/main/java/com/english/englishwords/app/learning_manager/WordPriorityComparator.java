@@ -10,9 +10,9 @@ import java.util.Comparator;
 import java.util.Date;
 
 public class WordPriorityComparator implements Comparator<String> {
-  public final long ONE_MINUTE = 60000000; // in milliseconds.
-  public final long ONE_HOUR = 60 * ONE_MINUTE;
-  public final long ONE_DAY = 24 * ONE_HOUR;
+  public static final long MINUTE = 60000000; // in milliseconds.
+  public static final long HOUR = 60 * MINUTE;
+  public static final long DAY = 24 * HOUR;
   private final WordStatsDAO wordStatsDAO;
   private final WordListsDAO wordListDAO;
 
@@ -31,20 +31,20 @@ public class WordPriorityComparator implements Comparator<String> {
     }
 
     // Only one successful test in word stats.
-    Pair<Date, Boolean> lastRepetition = wordStats.history.get(wordStats.history.size() - 1);
+    Pair<Long, Boolean> lastRepetition = wordStats.history.get(wordStats.history.size() - 1);
     if (wordStats.history.size() == 1 && lastRepetition.second) {
-      return lastRepetition.first.getTime() + 24 * 60 * ONE_MINUTE;
+      return lastRepetition.first + 24 * 60 * MINUTE;
     }
 
     // The last test was unsuccessful.
     if (!lastRepetition.second) {
       // Try to test word again regardless of its level to ensure users didn't forget it
       // completely.
-      return lastRepetition.first.getTime() + 4 * ONE_MINUTE;
+      return lastRepetition.first + 4 * MINUTE;
     }
 
     // We have more than 2 tests for this word and last test was successful.
-    return lastRepetition.first.getTime() + getWordMemorizationDelay(wordStats);
+    return lastRepetition.first + getWordMemorizationDelay(wordStats);
   }
 
   // Calculated as weighted average of historic time spans of 3 previous tests (for unsuccessful
@@ -55,10 +55,9 @@ public class WordPriorityComparator implements Comparator<String> {
     double[] coefsPartialSums = new double[]{5, 8, 9};
     int history_size = wordStats.history.size();
     for (int i = history_size - 1; i >= Math.max(history_size - 3, 0); i--) {
-      Pair<Date, Boolean> wordStat = wordStats.history.get(i);
+      Pair<Long, Boolean> wordStat = wordStats.history.get(i);
       if (wordStat.second) {
-        long timeBetweenExercises =
-            wordStat.first.getTime() - wordStats.history.get(i - 1).first.getTime();
+        long timeBetweenExercises = wordStat.first - wordStats.history.get(i - 1).first;
         retentionApproximation += timeBetweenExercises * coefs[history_size - i - 1];
       }
     }

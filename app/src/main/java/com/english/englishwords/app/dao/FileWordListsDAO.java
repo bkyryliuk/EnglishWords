@@ -51,7 +51,7 @@ public class FileWordListsDAO implements WordListsDAO {
     this.learnedWords = learnedWords;
   }
 
-  public static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
+  private static ArrayList<String> readWordListFromInput(InputStream input) throws IOException {
     ArrayList<String> wordList = new ArrayList<String>();
     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
     String word;

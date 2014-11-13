@@ -8,34 +8,23 @@ import java.util.Date;
 public class WordStats {
   public String word;
   // TODO(krasikov): maybe replace Date with long.
-  public ArrayList<Pair<Date, Boolean>> history = new ArrayList<Pair<Date, Boolean>>();
+  public ArrayList<Pair<Long, Boolean>> history = new ArrayList<Pair<Long, Boolean>>();
 
   public WordStats(String word) {
     this.word = word;
   }
 
   public void addEntry(Boolean success) {
-    history.add(new Pair<Date, Boolean>(new Date(), success));
+    addEntry(new Date().getTime(), success);
   }
+
+  public void addEntry(Long time, Boolean success) {
+    history.add(new Pair<Long, Boolean>(time, success));
+  }
+
 
   public void copyFrom(WordStats wordStats) {
     word = wordStats.word;
     history = wordStats.history;
   }
-
-//  public ArrayList<Date> getDates() {
-//    ArrayList<Date> dates = new ArrayList<Date>();
-//    for (Pair<Date, Boolean> entry : history) {
-//      dates.add(entry.first);
-//    }
-//    return dates;
-//  }
-//
-//  public ArrayList<Boolean> getSuccesses() {
-//    ArrayList<Boolean> successes = new ArrayList<Boolean>();
-//    for (Pair<Date, Boolean> entry : history) {
-//      successes.add(entry.second);
-//    }
-//    return successes;
-//  }
 }
