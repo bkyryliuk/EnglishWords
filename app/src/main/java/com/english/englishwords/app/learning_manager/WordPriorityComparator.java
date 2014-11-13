@@ -2,6 +2,8 @@ package com.english.englishwords.app.learning_manager;
 
 import android.util.Pair;
 
+import com.english.englishwords.app.dao.WordListsDAO;
+import com.english.englishwords.app.dao.WordStatsDAO;
 import com.english.englishwords.app.data_model.WordStats;
 
 import java.util.Comparator;
@@ -11,11 +13,12 @@ public class WordPriorityComparator implements Comparator<String> {
   public final long ONE_MINUTE = 60000000; // in milliseconds.
   public final long ONE_HOUR = 60 * ONE_MINUTE;
   public final long ONE_DAY = 24 * ONE_HOUR;
+  private final WordStatsDAO wordStatsDAO;
+  private final WordListsDAO wordListDAO;
 
-  private LearningManager learningManager;
-
-  public WordPriorityComparator(LearningManager learningManager) {
-    this.learningManager = learningManager;
+  public WordPriorityComparator(WordListsDAO wordListDAO, WordStatsDAO wordStatsDAO) {
+    this.wordListDAO = wordListDAO;
+    this.wordStatsDAO = wordStatsDAO;
   }
 
   private long whenToLearn(WordStats wordStats) {
@@ -68,15 +71,15 @@ public class WordPriorityComparator implements Comparator<String> {
     if (word1.equals(word2)) {
       return 0;
     }
-    WordStats wordStats1 = learningManager.getStats(word1);
-    WordStats wordStats2 = learningManager.getStats(word2);
+    WordStats wordStats1 = wordStatsDAO.getStats(word1);
+    WordStats wordStats2 = wordStatsDAO.getStats(word2);
     long when1 = whenToLearn(wordStats1);
     long when2 = whenToLearn(wordStats2);
     if (when1 == when2) {
       // Compare priority according to the original list.
       return
-          learningManager.getPositionInUsageFrequencyList(word1) <
-              learningManager.getPositionInUsageFrequencyList(word2)
+          wordListDAO.getPositionInUsageFrequencyList(word1) <
+              wordListDAO.getPositionInUsageFrequencyList(word2)
           ? -1 : 1;
     }
     return when1 < when2 ? -1 : 1;

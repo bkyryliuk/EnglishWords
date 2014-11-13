@@ -7,5 +7,5 @@ public interface WordListsDAO {
   void saveLearnedWords(Set<String> learnedWords);
   Set<String> getLearnedWords();
   List<String> getWordOrderByUsage();
-  int getPositionInOriginalWordList(String word);
+  int getPositionInUsageFrequencyList(String word);
 }

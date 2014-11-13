@@ -30,7 +30,7 @@ class DummyWordListsDAO implements WordListsDAO {
   }
 
   @Override
-  public int getPositionInOriginalWordList(String word) {
+  public int getPositionInUsageFrequencyList(String word) {
     return wordOrder.indexOf(word);
   }
 }

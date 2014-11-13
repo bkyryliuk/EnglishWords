@@ -18,7 +18,7 @@ public class WordPriorityComparatorTest extends InstrumentationTestCase {
     LearningManager.initialize(
         new DummyWordStatsDAO(Arrays.asList(stats)),
         new DummyWordListsDAO(Arrays.asList(wordOrder)));
-    return new WordPriorityComparator(LearningManager.getInstance());
+    return new WordPriorityComparator(LearningManager.getInstance(), );
   }
 
   public void testGetWordMemorizationDelay() throws Exception {
@@ -28,7 +28,7 @@ public class WordPriorityComparatorTest extends InstrumentationTestCase {
     WordPriorityComparator wordPriorityComparator = getComparator(
         new WordStats[]{stat1, stat2}, new String[] {"word1", "word2"});
 
-    assertEquals(wordPriorityComparator.compare("word1", "word2"), -1);
+    assertEquals(-1, wordPriorityComparator.compare("word1", "word2"));
   }
 
   public void testGetWordMemorizationDelay2() throws Exception {

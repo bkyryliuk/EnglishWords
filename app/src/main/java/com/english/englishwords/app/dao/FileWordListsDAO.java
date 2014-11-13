@@ -90,7 +90,7 @@ public class FileWordListsDAO implements WordListsDAO {
   }
 
   @Override
-  public int getPositionInOriginalWordList(String word) {
+  public int getPositionInUsageFrequencyList(String word) {
     return originalWordListToPos.get(word);
   }
 }

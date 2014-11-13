@@ -39,21 +39,13 @@ public class LearningManager {
     this.wordListsDAO = wordListsDAO;
 
     wordOrderByUsage = wordListsDAO.getWordOrderByUsage();
-    wordsInProgress =
-        new PriorityQueue<String>(wordOrderByUsage.size(), new WordPriorityComparator(this));
+    wordsInProgress = new PriorityQueue<String>(
+        wordOrderByUsage.size(), new WordPriorityComparator(wordListsDAO, wordStatsDAO));
     for (String word : wordOrderByUsage) {
       if (!wordListsDAO.getLearnedWords().contains(word)) {
         wordsInProgress.add(word);
       }
     }
-  }
-
-  public WordStats getStats(String word) {
-    return wordStatsDAO.getStats(word);
-  }
-
-  public int getPositionInUsageFrequencyList(String word) {
-    return wordListsDAO.getPositionInOriginalWordList(word);
   }
 
   public String popWord() { return wordsInProgress.poll(); }
