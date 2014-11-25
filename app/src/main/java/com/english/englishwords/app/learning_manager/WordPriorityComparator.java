@@ -1,5 +1,6 @@
 package com.english.englishwords.app.learning_manager;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.english.englishwords.app.dao.WordListsDAO;
@@ -21,48 +22,77 @@ public class WordPriorityComparator implements Comparator<String> {
     this.wordStatsDAO = wordStatsDAO;
   }
 
+  // Algo description:
+  // https://docs.google.com/document/d/1DnkMy293buvIxM4AfJgHH7xy4ckPNZrSvTY3pcMAIWA/edit#
   private long whenToLearn(WordStats wordStats) {
     long rightNow = new Date().getTime();
 
-    // New word.
+    // New word (no tests in history).
     if (wordStats.history.size() == 0) {
       // All new words should be scheduled for right now.
       return rightNow;
     }
 
-    // Only one successful test in word stats.
+    // Check if all exercises (even the first one) were successful - maybe users knows the word.
     Pair<Long, Boolean> lastRepetition = wordStats.history.get(wordStats.history.size() - 1);
-    if (wordStats.history.size() == 1 && lastRepetition.second) {
-      return lastRepetition.first + 24 * 60 * MINUTE;
+    if (wordStats.allExercisesAreSuccessful()) {
+      if (wordStats.history.size() == 1) {
+        return lastRepetition.first + 6 * DAY;
+      }
+      else if (wordStats.history.size() == 2) {
+        return lastRepetition.first + 21 * DAY;
+      } else {
+        Log.w(
+            getClass().getCanonicalName(),
+            "There can be no word with more than 2 total exercises all of which are successful. " +
+                "Successful exercises: " + wordStats.history.size());
+      }
     }
 
-    // The last test was unsuccessful.
+    // Last exercise wasn't successful.
     if (!lastRepetition.second) {
-      // Try to test word again regardless of its level to ensure users didn't forget it
-      // completely.
+      // Try to test word ASAP regardless of its level to ensure users didn't forget it completely.
       return lastRepetition.first + 4 * MINUTE;
     }
 
-    // We have more than 2 tests for this word and last test was successful.
-    return lastRepetition.first + getWordMemorizationDelay(wordStats);
+    // At this point there are 2+ exercises in history.
+    if (wordStats.history.size() < 2) {
+      throw new IllegalStateException("History size can't be less then 2 events at this point");
+    }
+
+    // TODO(krasikov): take into account word complexity
+    // Here http://www.supermemo.com/english/ol/sm2.htm word distance between successful repetitions
+    // is in [1.3 .. 2.5] depending on word complexity.
+    // Besides word length complexity can be determined on time spend answering exercise.
+
+    return lastRepetition.first + getNextExerciseDelay(wordStats);
   }
 
   // Calculated as weighted average of historic time spans of 3 previous tests (for unsuccessful
   // test weight is 0).
-  private int getWordMemorizationDelay(WordStats wordStats) {
-    double retentionApproximation = 0;
-    double[] coefs = new double[]{5, 3, 1};
-    double[] coefsPartialSums = new double[]{5, 8, 9};
-    int history_size = wordStats.history.size();
-    for (int i = history_size - 1; i >= Math.max(history_size - 3, 0); i--) {
-      Pair<Long, Boolean> wordStat = wordStats.history.get(i);
-      if (wordStat.second) {
-        long timeBetweenExercises = wordStat.first - wordStats.history.get(i - 1).first;
-        retentionApproximation += timeBetweenExercises * coefs[history_size - i - 1];
-      }
+  private long getNextExerciseDelay(WordStats wordStats) {
+    int history_size = wordStats.history.size() - 1;
+    long timespan =
+        wordStats.history.get(history_size).first - wordStats.history.get(history_size - 1).first;
+    // TODO(krasikov): maybe add 2 hours delay for last 5 min successful exercise.
+    if (timespan < 8 * HOUR) {
+      return DAY;
+    } else if (timespan < 3 * DAY) {
+      return 6 * DAY;
+    } else if (timespan < 6 * DAY) {
+      return 12 * DAY;
+    } else if (timespan < 12 * DAY) {
+      return 24 * DAY;
+    } else if (timespan < 24 * DAY) {
+      return 48 * DAY;
+    } else if (timespan < 48 * DAY) {
+      return 96 * DAY;
     }
-    double normalization = coefsPartialSums[Math.max(history_size - 1, 2)] / 2.5;
-    return (int) (retentionApproximation / normalization);
+    Log.w(
+        getClass().getCanonicalName(),
+        "There can be no unlearned word which has successful exercise after more than 48 days " +
+            "after another successful exercise. Consider it as learned. Word: " + wordStats.word);
+    return 96 * DAY;
   }
 
   @Override

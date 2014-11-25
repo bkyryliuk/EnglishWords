@@ -17,8 +17,6 @@ import com.english.englishwords.app.data_model.WordStats;
 import com.english.englishwords.app.learning_manager.LearningManager;
 
 import java.util.ArrayList;
-import java.util.Date;
-
 
 public class LessonEnding extends Activity {
 

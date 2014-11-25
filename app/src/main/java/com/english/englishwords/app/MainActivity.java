@@ -131,7 +131,6 @@ public class MainActivity extends Activity
     private void createNextExercise() {
       if (exercisesPassedInCurrentSession == LESSONS_NUM_PER_SESSION) {
         exercisesPassedInCurrentSession = 0;
-        // TODO(bogdank) end the lesson and show the stats
         Intent intent = new Intent(this.getActivity().getApplicationContext(), LessonEnding.class);
         intent.putExtra(WORDS_IN_LESSON, wordsInLesson);
         startActivity(intent);
